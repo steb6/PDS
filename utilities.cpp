@@ -1,0 +1,51 @@
+#include <stdio.h> // this and following for kbhit()
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include "utilities.h"
+#include <cstdlib> // rand
+#include <iostream> // cout
+
+int kbhit(void)
+{
+  struct termios oldt, newt;
+  int ch;
+  int oldf;
+ 
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+  fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+ 
+  ch = getchar();
+ 
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+  fcntl(STDIN_FILENO, F_SETFL, oldf);
+ 
+  if(ch != EOF)
+  {
+    ungetc(ch, stdin);
+    return 1;
+  }
+ 
+  return 0;
+}
+
+
+int pick_candidate(std::vector<double> probabilities){
+    double r = ((double) rand() / (RAND_MAX));
+    int i=0;
+    while(r>0){
+	r -= probabilities[i];
+	i++;
+    }
+    i--;
+
+    return i;
+}
+
+void log(int i, int l){
+    std::cout << "Iterations n° " << i << "; best length: " << l << std::endl;
+}
