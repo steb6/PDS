@@ -5,8 +5,8 @@
 #include "Population.h"
 #include "utilities.h"
 
-#define N_NODES 10
-#define POP_SIZE 50
+#define N_NODES 17
+#define POP_SIZE 30
 #define RADIUS 10
 #define X_SIZE 640
 #define Y_SIZE 480
