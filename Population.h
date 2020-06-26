@@ -14,6 +14,7 @@ class Population{
 	Population(int, int);
 	void generate_population();
 	void reproduce(double);
+	void reproduce_all(double);
 	void calculate_affinities(City);
 	std::vector<int> crossover(int, int, double);
 	std::vector<int> mutation(std::vector<int>, double);

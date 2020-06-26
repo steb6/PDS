@@ -39,7 +39,8 @@ void Population::calculate_affinities(City city){
 	affinities[i] = affinities[i]/sum;
 }
 
-void Population::reproduce(double resistence){ //keep half of previous generation	
+//version that keep half of previous generation
+void Population::reproduce(double resistence){	
     // generate pop_size/2 new 
     std::vector<std::vector<int>> newborn = std::vector<std::vector<int>>(pop_size/2);
     for(int i=0; i<pop_size/2; i++)
@@ -54,6 +55,15 @@ void Population::reproduce(double resistence){ //keep half of previous generatio
     for(int i=0; i<pop_size && newborn.size()<pop_size; i++)
 	if(affinities[i] >= median)
 	    newborn.push_back(population[i]);
+
+    population = newborn;
+}
+ // version that replaces all the population
+void Population::reproduce_all(double resistence){ //keep half of previous generation	
+    // generate pop_size/2 new 
+    std::vector<std::vector<int>> newborn = std::vector<std::vector<int>>(pop_size);
+    for(int i=0; i<pop_size; i++)
+	newborn[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
 
     population = newborn;
 }
