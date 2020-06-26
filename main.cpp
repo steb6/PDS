@@ -1,3 +1,23 @@
+/*
+ * Genetic Algorithm for TSP SPM 2020
+ *
+ * Dipartimento di Informatica Università di Pisa
+ *
+ * Author: Stefano Berti
+ *
+ * Professors: Danelutto, Torquati
+ *
+ * Description: this is an implementation of stream parallelism using pthreads
+ * 
+ *
+ * Example of usage: ./demo 20 120 4
+ *
+ */
+
+// 0 = sequential, 1 = thread, 2 = fastflow
+#define MODE 0
+//#define GRAPH
+
 #include <unistd.h> //usleep
 #include <cstdlib> // atoi
 #include <chrono>
@@ -15,7 +35,8 @@
 #define RESISTENCE 0.9 // probability that mutate does not happen
 #define TOP_BAR 50 // height in pixel of information bar
 
-//#define GRAPH
+
+
 
 using namespace std::chrono;
 
@@ -64,8 +85,16 @@ int main(int argc, char *argv[]){
 	int i;
 	i=0;
 
-	city.generate_graph();
-	population.generate_population();
+	switch(MODE){
+	    case 0: // sequential
+		city.generate_graph();
+		population.generate_population();
+		break;
+	    case 1: // thread
+		break;
+	    case 2:
+		break;
+	}
 
 	high_resolution_clock::time_point start;
 	high_resolution_clock::time_point stop;
@@ -73,8 +102,19 @@ int main(int argc, char *argv[]){
 
 	/********************************** cycle /**********************************/
 	while(!kbhit() && i<MAX_ITER){
+
 	    start = high_resolution_clock::now();
 
+	    switch(MODE){
+	        case 0: // sequential
+		    population.calculate_affinities(city);
+		    population.reproduce_all(RESISTENCE);
+		    break;
+	        case 1: // thread
+		    break;
+	        case 2:
+		    break;
+	    }
 	    population.calculate_affinities(city);
 
 	    #ifdef GRAPH
