@@ -7,16 +7,20 @@
  *
  * Professors: Danelutto, Torquati
  *
- * Description: this is an implementation of stream parallelism using pthreads
+ * Description: this is the project implementation
  * 
  *
  * Example of usage: ./demo 20 120 4
  *
  */
 
+// compile:  g++ -Wall -g *.cpp -o demo -pthread -lgraph
+// debug: gdb --args ./demo 4 4 4
+
 // 0 = sequential, 1 = thread, 2 = fastflow
-#define MODE 0
-//#define GRAPH
+
+#define MODE 1
+#define GRAPH
 
 #include <unistd.h> //usleep
 #include <cstdlib> // atoi
@@ -28,7 +32,7 @@
 #include "utilities.h"
 #include <iostream>
 
-#define MAX_ITER 1000
+#define MAX_ITER 50
 #define RADIUS 10
 #define X_SIZE 640
 #define Y_SIZE 480
@@ -45,10 +49,10 @@ int main(int argc, char *argv[]){
 	std::chrono::high_resolution_clock::time_point program_start;
 	program_start = high_resolution_clock::now();
 
-	/********************************** input reading /**********************************/
-	int N_NODES=0;
-	int POP_SIZE=0;
-	int NW=0;
+	// ********************************* input reading /**********************************/
+	int N_NODES=20;
+	int POP_SIZE=120;
+	int NW=5;
 	// check if any arguments is given
 	if(argc > 1){
 	    //wrong arguments number
@@ -68,13 +72,8 @@ int main(int argc, char *argv[]){
     	        return -1;
 	    }
 	}
-	// use default values
-	else{
-	    N_NODES = 20;
-	    POP_SIZE = 120;
-	}
 
-	/********************************** getting ready /**********************************/
+	// ********************************* getting ready /**********************************/
 	std::cout << "Genetic algorithm for Traveling Salesman problem" << std::endl;
 	#ifdef GRAPH
 	Draw draw(RADIUS, N_NODES);
@@ -91,8 +90,12 @@ int main(int argc, char *argv[]){
 		population.generate_population();
 		break;
 	    case 1: // thread
+		city.generate_graph();
+		population.generate_population();
 		break;
-	    case 2:
+	    case 2: // fastflow
+		city.generate_graph();
+		population.generate_population();
 		break;
 	}
 
@@ -100,7 +103,7 @@ int main(int argc, char *argv[]){
 	high_resolution_clock::time_point stop;
 	int cycle_time=0;
 
-	/********************************** cycle /**********************************/
+	// ********************************* cycle /**********************************/
 	while(!kbhit() && i<MAX_ITER){
 
 	    start = high_resolution_clock::now();
@@ -111,11 +114,15 @@ int main(int argc, char *argv[]){
 		    population.reproduce_all(RESISTENCE);
 		    break;
 	        case 1: // thread
+		    population.calculate_affinities_thread(city, NW);
+		    population.reproduce_all(RESISTENCE);
+		    //population.reproduce_all_thread(RESISTENCE, NW);
 		    break;
-	        case 2:
+	        case 2: // fastflow
+		    population.calculate_affinities_ff(city, NW);
+		    population.reproduce_all_ff(RESISTENCE, NW);
 		    break;
 	    }
-	    population.calculate_affinities(city);
 
 	    #ifdef GRAPH
 	    draw.clear();
@@ -124,9 +131,6 @@ int main(int argc, char *argv[]){
 	    draw.print_info(i, POP_SIZE, population.min_length);
 	    #endif
 
-	    //population.reproduce(RESISTENCE);
-	    population.reproduce_all(RESISTENCE);
-	    //usleep(100000); // 1/10 of second
 	    i++;
 
 	    stop = high_resolution_clock::now();
@@ -136,12 +140,12 @@ int main(int argc, char *argv[]){
 	    std::cout << "Microseconds for loop: " << cycle_time << std::endl;
 	}
 
-	/********************************** print time /**********************************/
+	// ********************************* print time /**********************************/
 	high_resolution_clock::time_point program_end;
 	program_end = high_resolution_clock::now();
 
 	int program_time = duration_cast<microseconds>(program_end - program_start).count();
-	std::cout << "Microseconds for " << i << " loops: " << program_time << std::endl;
+	std::cout << "Seconds for " << i << " loops: " << program_time/1000000. << std::endl;
 
 	#ifdef GRAPH
 	draw.close();

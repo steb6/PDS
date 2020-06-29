@@ -1,4 +1,5 @@
 #include <vector>
+#include <atomic>
 
 class Population{
     private:
@@ -9,13 +10,22 @@ class Population{
 
 
     public:
-	double min_length;
+	std::atomic<double> min_length;
         std::vector<int> best_one;
+
 	Population(int, int);
+
 	void generate_population();
-	void reproduce(double);
-	void reproduce_all(double);
+
 	void calculate_affinities(City);
+	void calculate_affinities_thread(City, int);
+	void calculate_affinities_ff(City city, int nw);
+
+	void reproduce_all(double);
+	void reproduce_all_ff(double, int);
+	void reproduce_all_thread(double, int);
+
 	std::vector<int> crossover(int, int, double);
 	std::vector<int> mutation(std::vector<int>, double);
+
 };
