@@ -23,7 +23,7 @@ class Population{
 
 	void reproduce_all(double);
 	void reproduce_all_ff(double, int);
-	void reproduce_all_thread(double, int);
+	void reproduce_all_thread(City, double, int);
 
 	std::vector<int> crossover(int, int, double);
 	std::vector<int> mutation(std::vector<int>, double);

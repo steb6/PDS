@@ -137,17 +137,30 @@ void Population::reproduce_all_ff(double resistence, int nw){
     population = newborn;
 }
 
-void Population::reproduce_all_thread(double resistence, int nw){
+void Population::reproduce_all_thread(City city, double resistence, int nw){
 
     std::vector<std::thread> threads;
     std::vector<std::vector<int>> newborn = std::vector<std::vector<int>>(pop_size);
+    std::vector<double> new_affinities = std::vector<double>(pop_size);
     int chunk_size = pop_size/nw;
+    std::mutex mtx;
+    std::atomic<double> sum{0};
 
     // define threads behaviour
-    auto myJob = [this, chunk_size, resistence, &newborn](int k) {
+    auto myJob = [this, &mtx, &sum, &city, chunk_size, resistence, &newborn, &new_affinities](int k) {
         for(int i=k*chunk_size; i<(k+1)*chunk_size; i++){
             newborn[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
+	    double score = city.path_length(newborn[i]);
+	    if(score<min_length){
+	        mtx.lock();
+	        min_length = score;
+	        best_one = newborn[i];
+	        mtx.unlock();
+	    }
+	    new_affinities[i] = 1/(score+1);
+	    sum = sum + new_affinities[i];
 	}
+
     };
 
     // start threads
@@ -156,8 +169,13 @@ void Population::reproduce_all_thread(double resistence, int nw){
     for (int i=0; i<nw; i++)
         threads[i].join();
 
+    // normalize
+    for(int i=0; i<pop_size; i++)
+	new_affinities[i] = new_affinities[i]/sum;
+
     // evolve
     population = newborn;
+    affinities = new_affinities;
 }
 
 

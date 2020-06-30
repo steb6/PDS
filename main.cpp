@@ -119,7 +119,8 @@ int main(int argc, char *argv[]){
 	#ifdef GRAPH
 	Draw draw(RADIUS, N_NODES, TOP_BAR);
 	#endif
-
+	// initialize affinities
+	population.calculate_affinities(city);
 	double best = DBL_MAX;
 
 	while(!kbhit() && i<MAX_ITER){
@@ -132,8 +133,7 @@ int main(int argc, char *argv[]){
 		    population.reproduce_all(RESISTENCE);
 		    break;
 	        case 1: // thread
-		    population.calculate_affinities_thread(city, NW);
-		    population.reproduce_all_thread(RESISTENCE, NW);
+		    population.reproduce_all_thread(city, RESISTENCE, NW);
 		    break;
 	        case 2: // fastflow
 		    population.calculate_affinities_ff(city, NW);
