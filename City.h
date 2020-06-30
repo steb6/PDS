@@ -7,11 +7,12 @@ class City{
         int x_gap = 0;
         int y_gap = 0;
         int border = 0;
+	int top_bar = 0;
 
     public:
 	std::vector<int> x;
         std::vector<int> y;
-        City(int, int, int, int);
+        City(int, int, int, int, int);
         void generate_graph();
         int path_length(std::vector<int>);
         int node_distance(int, int);

@@ -82,7 +82,7 @@ void Population::calculate_affinities_thread(City city, int nw){ //TODO keep min
 
 void Population::calculate_affinities_ff(City city, int nw){
     double sum=0;
-    ParallelForReduce<double> pfr;
+    ParallelForReduce<double> pfr(nw);
     pfr.parallel_reduce(sum, 0, //reduction variable, identity-value
 			0, population.size(), //first, last
 			1, 0, //step, chunksize
@@ -101,8 +101,15 @@ void Population::calculate_affinities_ff(City city, int nw){
 
     // normalization
     ParallelFor pf(nw);
-
+    pf.parallel_for_idx(0, pop_size,
+			1, 0, //step, chunksize
+			[this, sum](const long begin, const long end, const long thid)  {
+			    for(long i=begin; i<end; ++i){
+                                affinities[i] = affinities[i]/sum;
+			    }
+			});
 }
+
 
  // version that replaces all the population
 void Population::reproduce_all(double resistence){ //keep half of previous generation	

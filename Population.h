@@ -19,7 +19,7 @@ class Population{
 
 	void calculate_affinities(City);
 	void calculate_affinities_thread(City, int);
-	void calculate_affinities_ff(City city, int nw);
+	void calculate_affinities_ff(City, int);
 
 	void reproduce_all(double);
 	void reproduce_all_ff(double, int);

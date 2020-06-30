@@ -4,11 +4,12 @@
 #include <math.h> // pow
 #include <time.h> // time
 
-City::City(int gap_x, int gap_y, int b, int n){
+City::City(int gap_x, int gap_y, int b, int n, int t){
     x_gap = gap_x;
     y_gap = gap_y;
     border = b;
     n_nodes = n;
+    top_bar = t;
     x = std::vector<int>(n);
     y = std::vector<int>(n);
 }
@@ -17,7 +18,7 @@ void City::generate_graph(){ // generate points, having gaps and border to avoid
     srand(time(NULL));
     for(int i=0; i<n_nodes; i++){
         x[i] = (rand() % (x_gap-border*2)) + border;
-        y[i] = (rand() % (y_gap-border-border*2)) + border + border; // y
+        y[i] = (rand() % (y_gap-top_bar-border*2)) + border + top_bar;
      }
 }
 
