@@ -94,14 +94,17 @@ int main(int argc, char *argv[]){
 
 	switch(MODE){
 	    case 0: // sequential
+		std::cout << "Sequential version" << std::endl;
 		city.generate_graph();
 		population.generate_population();
 		break;
 	    case 1: // thread
+		std::cout << "Thread version" << std::endl;
 		city.generate_graph();
 		population.generate_population();
 		break;
 	    case 2: // fastflow
+		std::cout << "FastFlow version" << std::endl;
 		city.generate_graph();
 		population.generate_population();
 		break;

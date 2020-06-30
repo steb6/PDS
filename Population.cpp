@@ -48,7 +48,7 @@ void Population::calculate_affinities(City city){
 	affinities[i] = affinities[i]/sum;
 }
 
-void Population::calculate_affinities_thread(City city, int nw){ //TODO keep minimum, parallelize invert score, add mutex for best path
+void Population::calculate_affinities_thread(City city, int nw){
 
     std::mutex mtx;
     std::atomic<double> sum{0};
