@@ -123,25 +123,51 @@ void Population::reproduce_all(double resistence){
     population = newborn;
 }
 
-void Population::reproduce_all_ff(double resistence, int nw){
+void Population::reproduce_all_ff(City city, double resistence, int nw){
+
     std::vector<std::vector<int>> newborn = std::vector<std::vector<int>>(pop_size);
+    std::vector<double> new_affinities = std::vector<double>(pop_size);
+    double sum = 0;
+
+    ParallelForReduce<double> pfr(nw);
+    pfr.parallel_reduce(sum, 0, //reduction variable, identity-value
+			0, population.size(), //first, last
+			1, 0, //step, chunksize
+			[this, &city, &newborn, &new_affinities, resistence](const long i, double &mysum){ //mapF
+			    newborn[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
+			    double score = city.path_length(population[i]);
+			    if(score < min_length){ // TODO could cause problem, understand how to do it
+				min_length = score;
+				best_one = population[i];
+			    }
+			    score = 1/(score+1);
+			    new_affinities[i] = score;	    
+			    mysum += score;
+			},
+			[](double &s, const double e){ s+= e; }, //reduceF
+			nw); // number of threads, we have 5
+
+    // normalization
     ParallelFor pf(nw);
     pf.parallel_for_idx(0, pop_size,
 			1, 0, //step, chunksize
-			[this, resistence, &newborn](const long begin, const long end, const long thid)  {
+			[this, sum, &new_affinities](const long begin, const long end, const long thid)  {
 			    for(long i=begin; i<end; ++i){
-                                newborn[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
+                                new_affinities[i] = new_affinities[i]/sum;
 			    }
 			});
     // evolve
+    affinities = new_affinities;
     population = newborn;
 }
 
 void Population::reproduce_all_thread(City city, double resistence, int nw){
 
     std::vector<std::thread> threads;
+
     std::vector<std::vector<int>> newborn = std::vector<std::vector<int>>(pop_size);
     std::vector<double> new_affinities = std::vector<double>(pop_size);
+
     int chunk_size = pop_size/nw;
     std::mutex mtx;
     std::atomic<double> sum{0};

@@ -22,7 +22,7 @@ class Population{
 	void calculate_affinities_ff(City, int);
 
 	void reproduce_all(double);
-	void reproduce_all_ff(double, int);
+	void reproduce_all_ff(City, double, int);
 	void reproduce_all_thread(City, double, int);
 
 	std::vector<int> crossover(int, int, double);

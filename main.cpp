@@ -19,7 +19,7 @@
 
 // 0 = sequential, 1 = thread, 2 = fastflow
 
-#define MODE 1
+#define MODE 2
 #define GRAPH
 
 #include <unistd.h> //usleep
@@ -136,8 +136,7 @@ int main(int argc, char *argv[]){
 		    population.reproduce_all_thread(city, RESISTENCE, NW);
 		    break;
 	        case 2: // fastflow
-		    population.calculate_affinities_ff(city, NW);
-		    population.reproduce_all_ff(RESISTENCE, NW);
+		    population.reproduce_all_ff(city, RESISTENCE, NW);
 		    break;
 	    }
 
