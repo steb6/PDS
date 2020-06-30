@@ -46,6 +46,23 @@ int pick_candidate(std::vector<double> probabilities){
     return i;
 }
 
-void log(int i, int l){
-    std::cout << "Iterations n° " << i << "; best length: " << l << std::endl;
+void log(int i, int pop_size, int nw, int time, int n_nodes){
+    std::cout << "#" << i << "; pop_size: " << pop_size << "; nw: " << nw << "; time: " << (double)time/1000000 << "; #nodes: " << n_nodes << "; thr: " << ((double)i/(double)time)*1000000 << "\r";
+    std::cout.flush();
+/*float progress = 0.0; //TODO progressbar
+while (progress < 1.0) {
+    int barWidth = 70;
+    std::cout << "[";
+    int pos = barWidth * progress;
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << int(progress * 100.0) << " %\r";
+    std::cout.flush();
+
+    progress += 0.000001; // for demonstration only
+}
+std::cout << std::endl;*/
 }

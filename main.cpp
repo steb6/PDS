@@ -19,7 +19,7 @@
 
 // 0 = sequential, 1 = thread, 2 = fastflow
 
-#define MODE 2
+#define MODE 1
 #define GRAPH
 
 #include <unistd.h> //usleep
@@ -31,13 +31,14 @@
 #include "Population.h"
 #include "utilities.h"
 #include <iostream>
+#include <cfloat>
 
 #define MAX_ITER 1000000
 #define RADIUS 10
 #define X_SIZE 640
 #define Y_SIZE 480
 #define RESISTENCE 0.9 // probability that mutate does not happen
-#define TOP_BAR 60 // height in pixel of information bar
+#define TOP_BAR 0 // height in pixel of information bar
 
 
 
@@ -83,9 +84,6 @@ int main(int argc, char *argv[]){
 
 	// ********************************* getting ready /**********************************/
 	std::cout << "Genetic algorithm for Traveling Salesman problem @Berti Stefano" << std::endl;
-	#ifdef GRAPH
-	Draw draw(RADIUS, N_NODES, TOP_BAR);
-	#endif
 	City city(X_SIZE, Y_SIZE, RADIUS, N_NODES, TOP_BAR);
 	Population population(POP_SIZE, N_NODES);
 	
@@ -111,11 +109,16 @@ int main(int argc, char *argv[]){
 
 	stop = high_resolution_clock::now();
 	cycle_time = duration_cast<microseconds>(stop - start).count();
-
 	std::cout << "Microseconds for initialization: " << cycle_time << std::endl;
 
 
 	// ********************************* cycle /**********************************/
+	#ifdef GRAPH
+	Draw draw(RADIUS, N_NODES, TOP_BAR);
+	#endif
+
+	double best = DBL_MAX;
+
 	while(!kbhit() && i<MAX_ITER){
 
 	    start = high_resolution_clock::now();
@@ -127,8 +130,7 @@ int main(int argc, char *argv[]){
 		    break;
 	        case 1: // thread
 		    population.calculate_affinities_thread(city, NW);
-		    population.reproduce_all(RESISTENCE);
-		    //population.reproduce_all_thread(RESISTENCE, NW);
+		    population.reproduce_all_thread(RESISTENCE, NW);
 		    break;
 	        case 2: // fastflow
 		    population.calculate_affinities_ff(city, NW);
@@ -137,10 +139,13 @@ int main(int argc, char *argv[]){
 	    }
 
 	    #ifdef GRAPH
-	    draw.clear();
-	    draw.print_city(city.x, city.y);
-	    draw.print_best_one(population.best_one, city.x, city.y);
-	    draw.print_info(i, POP_SIZE, population.min_length, NW, program_time, N_NODES);
+	    if(population.min_length < best){
+	        draw.clear();
+	        draw.print_city(city.x, city.y);
+	        draw.print_best_one(population.best_one, city.x, city.y);
+		best = population.min_length;
+	    }
+	    //draw.print_info(i, POP_SIZE, NW, program_time, N_NODES);
 	    #endif
 
 	    i++;
@@ -148,14 +153,16 @@ int main(int argc, char *argv[]){
 	    program_end = high_resolution_clock::now();
 	    program_time = duration_cast<microseconds>(program_end - program_start).count();
 	    
-	    log(i, population.min_length);
-	    std::cout << "Microseconds for loop: " << cycle_time << std::endl;
+	    log(i, POP_SIZE, NW, program_time, N_NODES);
+	    //std::cout << "Microseconds for loop: " << cycle_time << std::endl;
 	}
 
 	// ********************************* print time /**********************************/
 
 	program_end = high_resolution_clock::now();
 	program_time = duration_cast<microseconds>(program_end - program_start).count();
+	std::cout.flush();
+	std::cout << std::endl;
 	std::cout << "Seconds for " << i << " loops: " << program_time/1000000. << std::endl;
 
 	#ifdef GRAPH

@@ -13,6 +13,6 @@ class Draw{
         void print_city(std::vector<int>, std::vector<int>);
         void print_best_one(std::vector<int>, std::vector<int>, std::vector<int>);
 	void clear();
-	void print_info(int, int, double, int, double, int);
+	void print_info(int, int, int, int, int);
 	void close();
 };

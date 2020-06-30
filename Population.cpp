@@ -31,6 +31,8 @@ void Population::generate_population(){
     }
 }
 
+// ********************************* calculate_affinities /**********************************/
+
 void Population::calculate_affinities(City city){
     double sum = 0;
     for(int k=0; k<pop_size; k++){ // calculate score for every member of population
@@ -88,7 +90,7 @@ void Population::calculate_affinities_ff(City city, int nw){
 			1, 0, //step, chunksize
 			[&city, this](const long i, double &mysum){ //mapF
 			    double score = city.path_length(population[i]);
-			    if(score < min_length){
+			    if(score < min_length){ // TODO could cause problem, understand how to do it
 				min_length = score;
 				best_one = population[i];
 			    }
@@ -110,14 +112,14 @@ void Population::calculate_affinities_ff(City city, int nw){
 			});
 }
 
+// ********************************* reproduce /**********************************/
 
- // version that replaces all the population
-void Population::reproduce_all(double resistence){ //keep half of previous generation	
-    // generate pop_size/2 new 
+void Population::reproduce_all(double resistence){	
     std::vector<std::vector<int>> newborn = std::vector<std::vector<int>>(pop_size);
     for(int i=0; i<pop_size; i++)
 	newborn[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
 
+    // evolve
     population = newborn;
 }
 
@@ -126,13 +128,41 @@ void Population::reproduce_all_ff(double resistence, int nw){
     ParallelFor pf(nw);
     pf.parallel_for_idx(0, pop_size,
 			1, 0, //step, chunksize
-			[this, resistence](const long begin, const long end, const long thid)  {
+			[this, resistence, &newborn](const long begin, const long end, const long thid)  {
 			    for(long i=begin; i<end; ++i){
-                                population[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
+                                newborn[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
 			    }
 			});
+    // evolve
+    population = newborn;
 }
 
+void Population::reproduce_all_thread(double resistence, int nw){
+
+    std::vector<std::thread> threads;
+    std::vector<std::vector<int>> newborn = std::vector<std::vector<int>>(pop_size);
+    int chunk_size = pop_size/nw;
+
+    // define threads behaviour
+    auto myJob = [this, chunk_size, resistence, &newborn](int k) {
+        for(int i=k*chunk_size; i<(k+1)*chunk_size; i++){
+            newborn[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
+	}
+    };
+
+    // start threads
+    for (int i=0; i<nw; i++)
+        threads.push_back(std::thread(myJob, i));
+    for (int i=0; i<nw; i++)
+        threads[i].join();
+
+    // evolve
+    population = newborn;
+}
+
+
+
+// ********************************* crossover and mutation /**********************************/
 
 std::vector<int> Population::crossover(int a, int b, double resistence){
     if(a==b)
