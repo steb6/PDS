@@ -19,15 +19,19 @@
 
 // 0 = sequential, 1 = thread, 2 = fastflow
 
-#define MODE 2
-#define GRAPH
+#define MODE 1
+//#define GRAPH
 
 #include <unistd.h> //usleep
 #include <cstdlib> // atoi
 #include <chrono>
 
 #include "City.h"
+
+#ifdef GRAPH
 #include "Draw.h"
+#endif
+
 #include "Population.h"
 #include "utilities.h"
 #include <iostream>
@@ -118,10 +122,10 @@ int main(int argc, char *argv[]){
 	// ********************************* cycle /**********************************/
 	#ifdef GRAPH
 	Draw draw(RADIUS, N_NODES, TOP_BAR);
+	double best = DBL_MAX;
 	#endif
 	// initialize affinities
 	population.calculate_affinities(city);
-	double best = DBL_MAX;
 
 	while(!kbhit() && i<MAX_ITER){
 
