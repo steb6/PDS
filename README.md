@@ -22,3 +22,6 @@ cat log.txt | grep real | awk -Fm '{print $2}' | sed -e "s/s//g" | sed -e "s/,/.
 sed: con -e passo il comando, "sostituisci/carattere da sostituire/con cosa sostituire/globale"
 awk: -Fm dice di separare usando lo spazio
 
+// Per attivare interfaccia grafica
+define GRAPH in main.cpp
+in test.sh, commentare la linea di compilazione sbagliata

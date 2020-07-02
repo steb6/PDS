@@ -174,8 +174,6 @@ int main(int argc, char *argv[]){
 	std::cout << "Seconds for " << i << " loops: " << program_time/1000000. << std::endl;
 
 	#ifdef GRAPH
-	std::cout << "Press any key to quit" << std::endl;
-	while(!kbhit());
 	draw.close();
 	#endif
 	return 0;
