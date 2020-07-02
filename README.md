@@ -1,4 +1,4 @@
-Esecuzione su macchina virtuale:
+// Esecuzione su macchina virtuale:
 
 131.114.136.132 c6320p-2.itc.unipi.it phls
 i19
@@ -12,4 +12,13 @@ g++ -Wall -g *.cpp -o demo -phtread
 
 per fare upload dei file da locale, da dentro PDS:
 rsync -azur . s.berti9@phi19:
+
+// come calcolare media esecuzione programma
+script log.txt
+for((i=0; i<10; i++)); do time ./demo 1 10 1000 1; done
+exit
+cat log.txt | grep real | awk -Fm '{print $2}' | sed -e "s/s//g" | sed -e "s/,/./g" | awk '{sum += $1} END { cat sum/NR >> results.txt }'
+
+sed: con -e passo il comando, "sostituisci/carattere da sostituire/con cosa sostituire/globale"
+awk: -Fm dice di separare usando lo spazio
 

@@ -17,10 +17,8 @@
 // compile:  g++ -Wall -g *.cpp -o demo -pthread -lgraph
 // debug: gdb --args ./demo 4 4 4
 
-// 0 = sequential, 1 = thread, 2 = fastflow
-
-#define MODE 1
 //#define GRAPH
+//#define VERBOSE
 
 #include <unistd.h> //usleep
 #include <cstdlib> // atoi
@@ -37,7 +35,6 @@
 #include <iostream>
 #include <cfloat>
 
-#define MAX_ITER 1000000
 #define RADIUS 10
 #define X_SIZE 640
 #define Y_SIZE 480
@@ -62,26 +59,30 @@ int main(int argc, char *argv[]){
 	int program_time=0;
 
 	// ********************************* input reading /**********************************/
-	int N_NODES=15;
+	int N_NODES=10;
 	int POP_SIZE=10000;
 	int NW=5; //TODO get core number
+	int MODE=0;
+	int ITERATIONS=100;
 
 	// check if any arguments is given
 	if(argc > 1){
 	    //wrong arguments number
- 	    if (argc != 4) {
+ 	    if (argc != 6) {
     	        errno = EINVAL;
-    	        perror("Usage: N_NODES POP_SIZE NW");
+    	        perror("Usage: {0:SEQ 1:THREAD 2:FF} N_NODES POP_SIZE NW ITERATIONS\n");
     	        return -1;
 	    }
 	    // good arguments number, get them
-	    N_NODES = atoi(argv[1]);
-	    POP_SIZE = atoi(argv[2]);
-	    NW = atoi(argv[3]);
+	    MODE = atoi(argv[1]);
+	    N_NODES = atoi(argv[2]);
+	    POP_SIZE = atoi(argv[3]);
+	    NW = atoi(argv[4]);
+	    ITERATIONS = atoi(argv[5]);
 	    // invalid atoi conversion gives us 0
-	    if(N_NODES == 0 || POP_SIZE == 0 || NW == 0){
+	    if(N_NODES == 0 || POP_SIZE == 0 || NW == 0 || MODE<0 || MODE>2 || ITERATIONS == 0){
     	        errno = EINVAL;
-    	        perror("Usage: N_NODES POP_SIZE NW");
+    	        perror("Usage: {0:SEQ 1:THREAD 2:FF} N_NODES POP_SIZE NW ITERATIONS\n");
     	        return -1;
 	    }
 	}
@@ -127,7 +128,7 @@ int main(int argc, char *argv[]){
 	// initialize affinities
 	population.calculate_affinities(city);
 
-	while(!kbhit() && i<MAX_ITER){
+	while(!kbhit() && i<ITERATIONS){
 
 	    start = high_resolution_clock::now();
 
@@ -158,8 +159,9 @@ int main(int argc, char *argv[]){
 
 	    program_end = high_resolution_clock::now();
 	    program_time = duration_cast<microseconds>(program_end - program_start).count();
-	    
+	    #ifdef VERBOSE
 	    log(i, POP_SIZE, NW, program_time, N_NODES);
+	    #endif
 	    //std::cout << "Microseconds for loop: " << cycle_time << std::endl;
 	}
 
