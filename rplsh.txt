@@ -1,0 +1,85 @@
+rplsh> calculate = seq()
+rplsh> reproduce = seq()
+rplsh> main = pipe(calculate, reproduce)
+rplsh> annotate calculate with latency 10
+response: annotated!
+rplsh> annotate reproduce with latency 50
+response: annotated!
+rplsh> rewrite main with allrules
+rplsh> show main by servicetime, resources
+50.000000	2	[3] : pipe(calculate,reproduce)	
+50.000000	4	[1] : farm(pipe(calculate,reproduce)) with [ nw: 1]	
+50.000000	4	[4] : pipe(farm(calculate) with [ nw: 1],reproduce)	
+50.000000	4	[5] : pipe(calculate,farm(reproduce) with [ nw: 1])	
+50.000000	6	[0] : pipe(farm(calculate) with [ nw: 1],farm(reproduce) with [ nw: 1])	
+60.000000	1	[2] : comp(calculate,reproduce)	
+rplsh> set emitter_time with 1
+rplsh> set collector_time with 1
+rplsh> rewrite main with allrules
+rplsh> show main by servicetime, resources
+50.000000	2	[18] : pipe(calculate,reproduce)	
+50.000000	4	 [4] : farm(pipe(calculate,reproduce)) with [ nw: 1]	
+50.000000	4	[13] : pipe(calculate,farm(reproduce) with [ nw: 1])	
+50.000000	4	[17] : pipe(farm(calculate) with [ nw: 1],reproduce)	
+50.000000	6	 [1] : pipe(farm(farm(calculate) with [ nw: 1]) with [ nw: 1],reproduce)	
+50.000000	6	 [6] : pipe(calculate,farm(farm(reproduce) with [ nw: 1]) with [ nw: 1])	
+50.000000	6	 [7] : farm(pipe(calculate,farm(reproduce) with [ nw: 1])) with [ nw: 1]	
+50.000000	6	 [9] : farm(pipe(farm(calculate) with [ nw: 1],reproduce)) with [ nw: 1]	
+50.000000	6	[12] : farm(farm(pipe(calculate,reproduce)) with [ nw: 1]) with [ nw: 1]	
+50.000000	6	[16] : pipe(farm(calculate) with [ nw: 1],farm(reproduce) with [ nw: 1])	
+50.000000	8	 [5] : pipe(farm(farm(calculate) with [ nw: 1]) with [ nw: 1],farm(reproduce) with [ nw: 1])	
+50.000000	8	[10] : farm(pipe(farm(calculate) with [ nw: 1],farm(reproduce) with [ nw: 1])) with [ nw: 1]	
+50.000000	8	[14] : pipe(farm(calculate) with [ nw: 1],farm(farm(reproduce) with [ nw: 1]) with [ nw: 1])	
+50.000000	10	[11] : pipe(farm(farm(calculate) with [ nw: 1]) with [ nw: 1],farm(farm(reproduce) with [ nw: 1]) with [ nw: 1])	
+60.000000	1	 [2] : comp(calculate,reproduce)	
+60.000000	3	 [0] : comp(calculate,farm(reproduce) with [ nw: 1])	
+60.000000	3	 [3] : comp(farm(calculate) with [ nw: 1],reproduce)	
+60.000000	3	 [8] : farm(comp(calculate,reproduce)) with [ nw: 1]	
+60.000000	3	[15] : comp(farm(calculate) with [ nw: 1],farm(reproduce) with [ nw: 1])	
+rplsh> optimize main with farmopt
+rplsh> rewrite main with allrules
+rplsh> show main by servicetime, resources
+1.000000	66	[15] : farm(pipe(farm(calculate) with [ nw: 10],farm(reproduce) with [ nw: 50])) with [ nw: 1]	
+1.000000	66	[26] : pipe(farm(calculate) with [ nw: 10],farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])	
+1.000000	68	 [9] : pipe(farm(farm(farm(calculate) with [ nw: 10]) with [ nw: 1]) with [ nw: 1],farm(reproduce) with [ nw: 50])	
+1.000000	68	[25] : pipe(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])	
+1.000000	68	[35] : farm(pipe(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],farm(reproduce) with [ nw: 50])) with [ nw: 1]	
+1.000000	68	[36] : pipe(farm(calculate) with [ nw: 10],farm(farm(farm(reproduce) with [ nw: 50]) with [ nw: 1]) with [ nw: 1])	
+1.000000	68	[43] : farm(pipe(farm(calculate) with [ nw: 10],farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])) with [ nw: 1]	
+1.000000	70	 [6] : farm(pipe(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])) with [ nw: 1]	
+1.000000	70	 [7] : pipe(farm(farm(farm(calculate) with [ nw: 10]) with [ nw: 1]) with [ nw: 1],farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])	
+1.000000	70	[41] : pipe(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],farm(farm(farm(reproduce) with [ nw: 50]) with [ nw: 1]) with [ nw: 1])	
+1.000000	72	 [8] : pipe(farm(farm(farm(calculate) with [ nw: 10]) with [ nw: 1]) with [ nw: 1],farm(farm(farm(reproduce) with [ nw: 50]) with [ nw: 1]) with [ nw: 1])	
+1.000000	104	[24] : farm(farm(pipe(calculate,reproduce)) with [ nw: 50]) with [ nw: 1]	
+1.000000	106	[13] : farm(farm(farm(pipe(calculate,reproduce)) with [ nw: 50]) with [ nw: 1]) with [ nw: 1]	
+2.000000	52	[28] : comp(farm(calculate) with [ nw: 10],farm(reproduce) with [ nw: 50])	
+2.000000	52	[39] : comp(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],farm(reproduce) with [ nw: 50])	
+2.000000	54	[19] : comp(farm(calculate) with [ nw: 10],farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])	
+2.000000	54	[29] : farm(comp(farm(calculate) with [ nw: 10],farm(reproduce) with [ nw: 50])) with [ nw: 1]	
+2.000000	54	[34] : comp(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])	
+10.000000	55	[14] : farm(pipe(calculate,farm(reproduce) with [ nw: 50])) with [ nw: 1]	
+10.000000	55	[32] : pipe(calculate,farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])	
+10.000000	57	 [0] : pipe(calculate,farm(farm(farm(reproduce) with [ nw: 50]) with [ nw: 1]) with [ nw: 1])	
+10.000000	57	 [1] : farm(pipe(calculate,farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])) with [ nw: 1]	
+11.000000	52	[40] : comp(calculate,farm(reproduce) with [ nw: 50])	
+11.000000	54	 [5] : comp(calculate,farm(farm(reproduce) with [ nw: 50]) with [ nw: 1])	
+11.000000	54	[30] : farm(comp(calculate,farm(reproduce) with [ nw: 50])) with [ nw: 1]	
+50.000000	2	[42] : pipe(calculate,reproduce)	
+50.000000	4	[21] : farm(pipe(calculate,reproduce)) with [ nw: 1]	
+50.000000	4	[23] : pipe(calculate,farm(reproduce) with [ nw: 1])	
+50.000000	4	[33] : pipe(farm(calculate) with [ nw: 1],reproduce)	
+50.000000	6	[18] : pipe(farm(calculate) with [ nw: 1],farm(reproduce) with [ nw: 1])	
+50.000000	8	[11] : farm(farm(pipe(calculate,farm(reproduce) with [ nw: 1])) with [ nw: 1]) with [ nw: 1]	
+50.000000	8	[12] : farm(farm(pipe(farm(calculate) with [ nw: 1],reproduce)) with [ nw: 1]) with [ nw: 1]	
+50.000000	10	[10] : farm(farm(pipe(farm(calculate) with [ nw: 1],farm(reproduce) with [ nw: 1])) with [ nw: 1]) with [ nw: 1]	
+50.000000	15	[16] : pipe(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],reproduce)	
+50.000000	15	[17] : farm(pipe(farm(calculate) with [ nw: 10],reproduce)) with [ nw: 1]	
+50.000000	17	 [2] : pipe(farm(farm(farm(calculate) with [ nw: 10]) with [ nw: 1]) with [ nw: 1],reproduce)	
+50.000000	17	[20] : pipe(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],farm(reproduce) with [ nw: 1])	
+50.000000	17	[37] : farm(pipe(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],reproduce)) with [ nw: 1]	
+51.000000	12	[27] : comp(farm(calculate) with [ nw: 10],reproduce)	
+51.000000	14	 [3] : comp(farm(farm(calculate) with [ nw: 10]) with [ nw: 1],reproduce)	
+51.000000	14	 [4] : farm(comp(farm(calculate) with [ nw: 10],reproduce)) with [ nw: 1]	
+60.000000	1	[22] : comp(calculate,reproduce)	
+60.000000	3	[38] : farm(comp(calculate,reproduce)) with [ nw: 1]	
+60.000000	5	[31] : farm(farm(comp(calculate,reproduce)) with [ nw: 1]) with [ nw: 1]	

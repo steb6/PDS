@@ -17,8 +17,16 @@
 // compile:  g++ -Wall -g *.cpp -o demo -pthread -lgraph
 // debug: gdb --args ./demo 4 4 4
 
+// SI possono definire durante la compilazione con i comandi -DGRAPH -DVERBOSE
 //#define GRAPH
 //#define VERBOSE
+
+//TODO aggiungere costo relativo tempo overhead
+//TODO generare speedup con script test.sh e graph.sh
+//TODO fare implementazione con farm/map usando ff
+//TODO prendere i tempi ed usarli in modo furbo con rplsh
+//TODO provare vtune-gui
+
 
 #include <unistd.h> //usleep
 #include <cstdlib> // atoi

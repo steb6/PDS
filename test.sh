@@ -15,7 +15,9 @@ rm results/*
 if [[ $VERBOSE == 1 ]]
     then echo "Compiling..."
 fi
-g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp -o demo -pthread
+g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp -o demo -pthread -O3
+# UI
+#g++ -Wall -g *.cpp -o demo -pthread -lgraph
 
 # per ogni mode
 for((m=0; m<=2; m++))

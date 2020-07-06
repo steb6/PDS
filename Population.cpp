@@ -24,7 +24,7 @@ Population::Population(int p, int n){
 void Population::generate_population(){
     for(int k=0; k<pop_size; k++){
 	std::vector<int> path = std::vector<int>(n_nodes);
-	    for(int i=0; i<n_nodes; i++)
+	    for(int i=0; i<n_nodes; i++) // VECTORIZED
 		path[i] = i;
 	    std::random_shuffle(path.begin(), path.end());
 	    population[k] = path;
@@ -44,7 +44,7 @@ void Population::calculate_affinities(City city){
 	affinities[k] = 1/(score+1); // invert score (shortest path are better), +1 to avoid crash
 	sum += affinities[k];
     }
-    for(int i=0; i<pop_size; i++)
+    for(int i=0; i<pop_size; i++) // VECTORIZED
 	affinities[i] = affinities[i]/sum;
 }
 
@@ -106,7 +106,7 @@ void Population::calculate_affinities_ff(City city, int nw){
     pf.parallel_for_idx(0, pop_size,
 			1, 0, //step, chunksize
 			[this, sum](const long begin, const long end, const long thid)  {
-			    for(long i=begin; i<end; ++i){
+			    for(long i=begin; i<end; ++i){ //TODO VECTORIZED but possible aliasing
                                 affinities[i] = affinities[i]/sum;
 			    }
 			});
@@ -152,7 +152,7 @@ void Population::reproduce_all_ff(City city, double resistence, int nw){
     pf.parallel_for_idx(0, pop_size,
 			1, 0, //step, chunksize
 			[this, sum, &new_affinities](const long begin, const long end, const long thid)  {
-			    for(long i=begin; i<end; ++i){
+			    for(long i=begin; i<end; ++i){// TODO VECTORIZED but versioned
                                 new_affinities[i] = new_affinities[i]/sum;
 			    }
 			});
