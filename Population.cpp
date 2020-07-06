@@ -106,6 +106,7 @@ void Population::calculate_affinities_ff(City city, int nw){
     pf.parallel_for_idx(0, pop_size,
 			1, 0, //step, chunksize
 			[this, sum](const long begin, const long end, const long thid)  {
+			    #pragma GCC ivdep
 			    for(long i=begin; i<end; ++i){ //TODO VECTORIZED but possible aliasing
                                 affinities[i] = affinities[i]/sum;
 			    }
@@ -152,6 +153,7 @@ void Population::reproduce_all_ff(City city, double resistence, int nw){
     pf.parallel_for_idx(0, pop_size,
 			1, 0, //step, chunksize
 			[this, sum, &new_affinities](const long begin, const long end, const long thid)  {
+			    #pragma GCC ivdep
 			    for(long i=begin; i<end; ++i){// TODO VECTORIZED but versioned
                                 new_affinities[i] = new_affinities[i]/sum;
 			    }

@@ -3,6 +3,7 @@
 
 Draw::Draw(int r, int n, int t){
     gd = DETECT;
+    // Vectorized (what?)
     initgraph(&gd,&gm,NULL);
     setcolor(2);
     radius = r;
