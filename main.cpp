@@ -63,8 +63,8 @@ int main(int argc, char *argv[]){
 	high_resolution_clock::time_point start;
 	high_resolution_clock::time_point stop;
 
-	int cycle_time=0;
-	int program_time=0;
+	auto cycle_time=0;
+	auto program_time=0;
 
 	// ********************************* input reading /**********************************/
 	int N_NODES=10;
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]){
 	    i++;
 
 	    program_end = high_resolution_clock::now();
-	    program_time = duration_cast<microseconds>(program_end - program_start).count();
+	    program_time = duration_cast<nanoseconds>(program_end - program_start).count();
 	    #ifdef VERBOSE
 	    log(i, POP_SIZE, NW, program_time, N_NODES);
 	    #endif
@@ -179,7 +179,7 @@ int main(int argc, char *argv[]){
 	program_time = duration_cast<microseconds>(program_end - program_start).count();
 	std::cout.flush();
 	std::cout << std::endl;
-	std::cout << "Seconds for " << i << " loops: " << program_time/1000000. << std::endl;
+	std::cout << "microeconds for " << i << " loops: " << program_time << std::endl;
 
 	#ifdef GRAPH
 	draw.close();
