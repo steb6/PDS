@@ -61,12 +61,14 @@ void Population::calculate_affinities_thread(City city, int nw){
 	double score;
         for(int i=k*chunk_size; i<(k+1)*chunk_size; i++){
             score = city.path_length(population[i]);
+	    // metterli dentro l'if è un errore: posso fare controllo con due thread e li passano entrambi, ma se l'assegnamento lo fa prima quello più corto, poi viene sovrascritto da quello più lungo, quindi non funge
+	    // TODO ha senso min_length atomic?
+	    mtx.lock(); 
 	    if(score<min_length){
-		mtx.lock();
 		min_length = score;
 		best_one = population[i];
-		mtx.unlock();
 	    }
+	    mtx.unlock();
 	    affinities[i] = 1/(score+1);
 	    sum = sum + affinities[i];
 	}
@@ -179,16 +181,15 @@ void Population::reproduce_all_thread(City city, double resistence, int nw){
         for(int i=k*chunk_size; i<(k+1)*chunk_size; i++){
             newborn[i] = crossover(pick_candidate(affinities), pick_candidate(affinities), resistence);
 	    double score = city.path_length(newborn[i]);
+	    mtx.lock();
 	    if(score<min_length){
-	        mtx.lock();
 	        min_length = score;
 	        best_one = newborn[i];
-	        mtx.unlock();
 	    }
+	    mtx.unlock();
 	    new_affinities[i] = 1/(score+1);
 	    sum = sum + new_affinities[i];
 	}
-
     };
 
     // start threads

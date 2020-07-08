@@ -25,3 +25,6 @@ awk: -Fm dice di separare usando lo spazio
 // Per attivare interfaccia grafica
 define GRAPH in main.cpp
 in test.sh, commentare la linea di compilazione sbagliata
+
+// per scaricare risultati da remoto in results
+rsync -azur s.berti9@phi19:results /home/stefano/Desktop/PDS

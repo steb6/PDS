@@ -16,7 +16,7 @@ if [[ $VERBOSE == 1 ]]
     then echo "Compiling..."
 fi
 
-g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp -o demo -pthread -O3
+g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp -o demo -pthread -O3 -fopt-info-vec | grep Population
 # UI
 #g++ -Wall -g *.cpp -o demo -pthread -lgraph -DGRAPH -O3
 
