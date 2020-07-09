@@ -1,4 +1,4 @@
-#include <vector>
+#include "dependencies.h"
 
 class City{
 
@@ -14,6 +14,7 @@ class City{
         std::vector<int> y;
         City(int, int, int, int, int);
         void generate_graph();
+	void generate_graph_thread(int);
         int path_length(std::vector<int>);
         int node_distance(int, int);
 };

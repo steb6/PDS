@@ -1,5 +1,4 @@
-#include "Draw.h"
-#include <graphics.h>
+#include "dependencies.h"
 
 Draw::Draw(int r, int n, int t){
     gd = DETECT;

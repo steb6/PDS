@@ -2,11 +2,11 @@
 # prova demo con parametri fissi da 1 a 10 thread e fa la media di 10 esecuzioni ognuno
 
 VERBOSE=1
-N_NODES=10
-POP_SIZE=5000
+N_NODES=20
+POP_SIZE=10000
 MAX_NW=10
 TRIES=3
-ITERATIONS=10
+ITERATIONS=3
 
 # ATTENZIONE rimuove risultati precedenti
 rm results/*
@@ -16,11 +16,11 @@ if [[ $VERBOSE == 1 ]]
     then echo "Compiling..."
 fi
 
-g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp -o demo -pthread -O3 -fopt-info-vec | grep Population
+g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp GA.cpp -o demo -pthread -O3
+# -fopt-info-vec
 # UI
 #g++ -Wall -g *.cpp -o demo -pthread -lgraph -DGRAPH -O3
 
-# save global sequential time TODO stavo salvando gli speedup, ma il bash lavora solo con interi, quindi bisogna cambiare il main TODO ho cambiato il main, ma adesso non assegna il valore alla variabile perchè non è un intero, però la stampa TODO ME LO RICORDAVO DIVERSO LO SPEEDUP PD TODO ma se i tempi sono giusti, come mai lo speedup dei thread per esempio rimane ad uno?
 SEQ_TIME=0
 
 # per ogni mode
@@ -56,6 +56,7 @@ do
 		printf "$nw " >> results/speedup_$FILENAME
 		TN=$(cat aux.txt | awk '{sum += $1} END { print sum/NR }')
 		SPEEDUP=$(echo "scale=2; $SEQ_TIME/$TN" | bc)
+		echo "TN $TN SPEEDUP $SPEEDUP"
 		echo "$SPEEDUP" >> results/speedup_$FILENAME
 	fi
 

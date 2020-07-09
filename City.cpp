@@ -1,9 +1,4 @@
-#include "City.h"
-#include <cstdlib> // rand
-#include <cmath>  // sqrt
-#include <math.h> // pow
-#include <time.h> // time
-
+#include "dependencies.h"
 City::City(int gap_x, int gap_y, int b, int n, int t){
     x_gap = gap_x;
     y_gap = gap_y;
@@ -20,6 +15,26 @@ void City::generate_graph(){ // generate points, having gaps and border to avoid
         x[i] = (rand() % (x_gap-border*2)) + border;
         y[i] = (rand() % (y_gap-top_bar-border*2)) + border + top_bar;
      }
+}
+
+void City::generate_graph_thread(int nw){
+
+    std::vector<std::thread> threads;
+    int chunk_size = n_nodes/nw;
+
+    auto myJob = [this, chunk_size](int k) {
+        for(int i=k*chunk_size; i<(k+1)*chunk_size; i++){
+	    x[i] = (rand() % (x_gap-border*2)) + border;
+	    y[i] = (rand() % (y_gap-top_bar-border*2)) + border + top_bar;
+	}
+    };
+
+    // start threads
+    for (int i=0; i<nw; i++)
+        threads.push_back(std::thread(myJob, i));
+    for (int i=0; i<nw; i++)
+        threads[i].join();
+
 }
 
 int City::path_length(std::vector<int> path){

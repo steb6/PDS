@@ -1,4 +1,4 @@
-#include <vector>
+#include "dependencies.h"
 
 int kbhit(void);
 int pick_candidate(std::vector<double>);

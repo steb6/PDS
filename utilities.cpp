@@ -1,10 +1,4 @@
-#include <stdio.h> // this and following for kbhit()
-#include <termios.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include "utilities.h"
-#include <cstdlib> // rand
-#include <iostream> // cout
+#include "dependencies.h"
 
 int kbhit(void)
 {
