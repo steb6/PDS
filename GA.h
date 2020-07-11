@@ -11,7 +11,15 @@ class GA{
  
         GA(City&, double, int, int, int, int);
 
-        void evolution_seq();
-        void evolution_thread();
-        void evolution_ff();
+	#ifdef GRAPH
+            void evolution_seq(Draw);
+            void evolution_thread(Draw);
+            void evolution_ff(Draw);
+	#else
+	    void evolution_seq();
+            void evolution_thread();
+            void evolution_ff();
+	#endif
+
+
 };

@@ -8,13 +8,28 @@ GA::GA(City& c, double r, int w, int n, int p, int i) : city(c){
     iterations = i;
 }
 
+#ifdef GRAPH
+void GA::evolution_thread(Draw draw){
+#else
 void GA::evolution_thread(){
+#endif
 
     std::vector<std::thread> threads;
     std::atomic<int> counter{0};
+    #ifdef GRAPH
+    std::mutex mtx;
+    #endif
+    if(iterations<nw){ // if we have 3 iterations and 4 workers, we have to do at least 1 cycle
+	std::cout << "ERROR: less iterations than worker, what should we do?" << std::endl;
+	iterations = nw;
+    }
 
     // define threads behaviour
+    #ifdef GRAPH
+    auto myJob = [this, &counter, &draw, &mtx](int k) {
+    #else
     auto myJob = [this, &counter](int k) {
+    #endif
 
 	std::cout << "Hi, im thread " << k << std::endl;
 
@@ -38,6 +53,13 @@ void GA::evolution_thread(){
 	        if(score<best_score){
 		    best_score = score;
 		    best_path = new_population[i];
+		    #ifdef GRAPH
+		    mtx.lock();
+	            draw.clear();
+	            draw.print_city(city.x, city.y);
+	            draw.print_best_one(best_path, city.x, city.y);
+		    mtx.unlock();
+		    #endif
 	        }
 	        new_affinities[i] = 1/(score+1);
 	        sum += new_affinities[i];
@@ -58,12 +80,14 @@ void GA::evolution_thread(){
     for(int i=0; i<nw; i++)
         threads[i].join();
 
-    std::cout << "Executed " << counter << " loops" << std::endl;
+    std::cout << "Executed " << counter << " iterations" << std::endl;
 }
 
-
+#ifdef GRAPH
+void GA::evolution_seq(Draw draw){
+#else
 void GA::evolution_seq(){
-
+#endif
     int counter=0;
 
     Population population(pop_size, n_nodes);
@@ -84,6 +108,11 @@ void GA::evolution_seq(){
 	    if(score<best_score){
 		best_score = score;
 		best_path = new_population[i];
+		#ifdef GRAPH
+	        draw.clear();
+	        draw.print_city(city.x, city.y);
+	        draw.print_best_one(best_path, city.x, city.y);
+		#endif
 	    }
 	    new_affinities[i] = 1/(score+1);
 	    sum += new_affinities[i];
@@ -98,8 +127,16 @@ void GA::evolution_seq(){
     }
 }
 
-void GA::evolution_ff(){ //TODO
-    evolution_thread();
+#ifdef GRAPH
+void GA::evolution_ff(Draw draw){
+#else
+void GA::evolution_ff(){
+#endif
+    #ifdef GRAPH
+        evolution_thread(draw);
+    #else
+	evolution_thread();
+    #endif
 }
 // ********************************* FASTFLOW STUFF /**********************************/
 /*

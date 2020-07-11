@@ -2,11 +2,11 @@
 # prova demo con parametri fissi da 1 a 10 thread e fa la media di 10 esecuzioni ognuno
 
 VERBOSE=1
-N_NODES=20
-POP_SIZE=10000
+N_NODES=10
+POP_SIZE=5000
 MAX_NW=10
 TRIES=3
-ITERATIONS=3
+ITERATIONS=50
 
 # ATTENZIONE rimuove risultati precedenti
 rm results/*
@@ -44,26 +44,31 @@ do
         # esegui TRIES volte il programma e metti i tempi in aux.txt
         for((i=0; i<TRIES; i++))
         do
-            ./demo $m $N_NODES $POP_SIZE $nw $ITERATIONS | grep loops | awk -F ' ' '{print $5}'  >> aux.txt
+            TRY=$(./demo $m $N_NODES $POP_SIZE $nw $ITERATIONS | grep loops | awk -F ' ' '{print $5}')
+	    echo "$TRY"  >> aux.txt
         done
         # fai la media dei numeri in aux.txt e mettili nel results
 	printf "$nw " >> results/$FILENAME
-        cat aux.txt | awk '{sum += $1} END { print sum/NR }' >> results/$FILENAME
+        TN=$(cat aux.txt | awk '{sum += $1} END { printf "%2.f", sum/NR }')
+	echo "$TN" >> results/$FILENAME
+	echo "T(N) here is $TN"
 
 	# save speedup
 	if [[ $m > 0 ]]
 	    then
 		printf "$nw " >> results/speedup_$FILENAME
-		TN=$(cat aux.txt | awk '{sum += $1} END { print sum/NR }')
 		SPEEDUP=$(echo "scale=2; $SEQ_TIME/$TN" | bc)
-		echo "TN $TN SPEEDUP $SPEEDUP"
+		echo "SPEEDUP $SPEEDUP"
 		echo "$SPEEDUP" >> results/speedup_$FILENAME
 	fi
-
+	if [[ $m == 0 ]] # To avoid to do nw times the sequential work
+	then
+	    break
+	fi
     done
     # get sequential time
     if [[ $m == 0 ]]
-	then SEQ_TIME=$(cat results/$FILENAME | awk -F ' ' '{sum += $2} END { print sum/NR }')
+	then SEQ_TIME=$(cat results/$FILENAME | awk -F ' ' '{sum += $2} END { printf "%.2f", sum/NR }')
 	echo "Sequential time is $SEQ_TIME"
     fi
 done

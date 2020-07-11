@@ -1,8 +1,5 @@
 #include "dependencies.h"
 
-
-#include <mutex>
-
 using namespace ff;
 
 Population::Population(int p, int n){

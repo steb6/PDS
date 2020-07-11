@@ -38,9 +38,6 @@ using namespace std::chrono;
 
 int main(int argc, char *argv[]){
 
-	 // timer
-	high_resolution_clock::time_point program_start = high_resolution_clock::now();
-
 	// ********************************* input reading /**********************************/
 	int N_NODES=20;
 	int POP_SIZE=1000;
@@ -83,18 +80,33 @@ int main(int argc, char *argv[]){
 	GA ga(city, RESISTENCE, NW, N_NODES, POP_SIZE, ITERATIONS);
 
 	// ********************************* cycle /**********************************/
+	 // timer
+	high_resolution_clock::time_point program_start = high_resolution_clock::now();
+
 	switch(MODE){
 	    case 0: // sequential
 		std::cout << "Sequential version" << std::endl;
-		ga.evolution_seq();
+		#ifdef GRAPH
+		    ga.evolution_seq(draw);
+		#else
+		    ga.evolution_seq();
+		#endif
 		break;
 	    case 1: // thread
 		std::cout << "Thread version" << std::endl;
-		ga.evolution_thread();
+		#ifdef GRAPH
+		    ga.evolution_thread(draw);
+		#else
+		    ga.evolution_thread();
+		#endif
 		break;
 	    case 2: // fastflow
 		std::cout << "FastFlow version" << std::endl;
-		ga.evolution_ff();
+		#ifdef GRAPH
+		    ga.evolution_ff(draw);
+		#else
+		    ga.evolution_ff();
+		#endif
 		break;
 	}
 
@@ -115,7 +127,7 @@ int main(int argc, char *argv[]){
 	auto program_time = duration_cast<microseconds>(high_resolution_clock::now() - program_start).count();
 	std::cout.flush();
 	std::cout << std::endl;
-	std::cout << "Microseconds for " << ITERATIONS << " loops: " << program_time << std::endl;
+	std::cout << "Microseconds for " << ITERATIONS << " loops: " << std::fixed << program_time << std::endl;
 
 	#ifdef GRAPH
 	draw.close();
