@@ -14,6 +14,8 @@ void GA::evolution_thread(Draw draw){
 void GA::evolution_thread(){
 #endif
 
+    //pop_size = pop_size / nw;
+
     std::vector<std::thread> threads;
     std::atomic<int> counter{0};
     #ifdef GRAPH
@@ -43,13 +45,18 @@ void GA::evolution_thread(){
 	double best_score = DBL_MAX;
 	std::vector<int> best_path;
 
-	while(counter <= iterations-nw){ // because otherwise it does iterations+nw loops
-	    double sum=0;
+	//variables of the cycle
+	double sum=0;
+	int i=0;
+	double score=0;
+
+	for(int l=0; l<iterations; l++){ // because otherwise it does iterations+nw loops
+	    sum=0;
 
 	    // create new population and calculate score, then set it as population actual attribute
-	    for(int i=0; i<pop_size; i++){
+	    for(i=0; i<pop_size; i++){
 	        new_population[i] = population.crossover(pick_candidate(population.affinities), pick_candidate(population.affinities), resistence);
-	        double score = city.path_length(new_population[i]);
+	        score = city.path_length(new_population[i]);
 	        if(score<best_score){
 		    best_score = score;
 		    best_path = new_population[i];
@@ -64,7 +71,7 @@ void GA::evolution_thread(){
 	        new_affinities[i] = 1/(score+1);
 	        sum += new_affinities[i];
 	    }
-	    for(int i=0; i<pop_size; i++){
+	    for(i=0; i<pop_size; i++){
 	        new_affinities[i] = new_affinities[i]/sum;
     	    }
 	    population.population = new_population;
@@ -75,10 +82,10 @@ void GA::evolution_thread(){
     };
 
     // start threads
-    for(int i=0; i<nw; i++)
-        threads.push_back(std::thread(myJob, i));
-    for(int i=0; i<nw; i++)
-        threads[i].join();
+    for(int t=0; t<nw; t++)
+        threads.push_back(std::thread(myJob, t));
+    for(int t=0; t<nw; t++)
+        threads[t].join();
 
     std::cout << "Executed " << counter << " iterations" << std::endl;
 }
@@ -100,11 +107,15 @@ void GA::evolution_seq(){
     double best_score = DBL_MAX;
     std::vector<int> best_path;
 
+    double sum=0;
+    double score=0;
+    int i=0;
+
     while(counter < iterations){
-	double sum=0;
-	for(int i=0; i<pop_size; i++){
+	sum=0;
+	for(i=0; i<pop_size; i++){
 	    new_population[i] = population.crossover(pick_candidate(population.affinities), pick_candidate(population.affinities), resistence);
-	    double score = city.path_length(new_population[i]);
+	    score = city.path_length(new_population[i]);
 	    if(score<best_score){
 		best_score = score;
 		best_path = new_population[i];
@@ -117,7 +128,7 @@ void GA::evolution_seq(){
 	    new_affinities[i] = 1/(score+1);
 	    sum += new_affinities[i];
 	}
-	for(int i=0; i<pop_size; i++){
+	for(i=0; i<pop_size; i++){
 	    new_affinities[i] = new_affinities[i]/sum;
     	}
 	population.population = new_population;
