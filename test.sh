@@ -2,11 +2,11 @@
 # prova demo con parametri fissi da 1 a 10 thread e fa la media di 10 esecuzioni ognuno
 
 VERBOSE=1
-N_NODES=10
-POP_SIZE=5000
+N_NODES=20
+POP_SIZE=10000
 MAX_NW=10
 TRIES=3
-ITERATIONS=50
+ITERATIONS=10
 
 # ATTENZIONE rimuove risultati precedenti
 rm results/*
@@ -23,8 +23,8 @@ g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp GA.cpp -o demo -pthr
 
 SEQ_TIME=0
 
-# per ogni mode
-for((m=0; m<=2; m++))
+# per ogni mode TODO aggiungere fastflow
+for((m=0; m<=1; m++))
 do
     if [[ $VERBOSE == 1 ]]
         then echo "Work $m"

@@ -18,6 +18,10 @@
 #include <termios.h> //kbit
 #include <fcntl.h> //khbit
 #include <mutex>
+#include <ff/ff.hpp>
+#include <ff/pipeline.hpp>
+#include <ff/farm.hpp>
+using namespace ff;
 
 #include "utilities.h"
 #include "City.h"

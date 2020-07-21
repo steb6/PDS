@@ -8,16 +8,17 @@ GA::GA(City& c, double r, int w, int n, int p, int i) : city(c){
     iterations = i;
 }
 
+// La grandezza della popolazione rimane la stessa, ma riduco il numero di iterazioni
 #ifdef GRAPH
 void GA::evolution_thread(Draw draw){
 #else
 void GA::evolution_thread(){
 #endif
 
-    //pop_size = pop_size / nw;
+    int pop_thread = pop_size/nw;
 
     std::vector<std::thread> threads;
-    std::atomic<int> counter{0};
+
     #ifdef GRAPH
     std::mutex mtx;
     #endif
@@ -28,19 +29,19 @@ void GA::evolution_thread(){
 
     // define threads behaviour
     #ifdef GRAPH
-    auto myJob = [this, &counter, &draw, &mtx](int k) {
+    auto myJob = [this, pop_thread, &draw, &mtx](int k) {
     #else
-    auto myJob = [this, &counter](int k) {
+    auto myJob = [this, pop_thread](int k) {
     #endif
 
 	std::cout << "Hi, im thread " << k << std::endl;
 
-	Population population(pop_size, n_nodes);
+	Population population(pop_thread, n_nodes);
 	population.generate_population();
 	population.calculate_affinities(city);
 
-	std::vector<std::vector<int>> new_population = std::vector<std::vector<int>>(pop_size);	
-	std::vector<double> new_affinities = std::vector<double>(pop_size);
+	std::vector<std::vector<int>> new_population = std::vector<std::vector<int>>(pop_thread);	
+	std::vector<double> new_affinities = std::vector<double>(pop_thread);
 
 	double best_score = DBL_MAX;
 	std::vector<int> best_path;
@@ -54,13 +55,13 @@ void GA::evolution_thread(){
 	    sum=0;
 
 	    // create new population and calculate score, then set it as population actual attribute
-	    for(i=0; i<pop_size; i++){
+	    for(i=0; i<pop_thread; i++){
 	        new_population[i] = population.crossover(pick_candidate(population.affinities), pick_candidate(population.affinities), resistence);
 	        score = city.path_length(new_population[i]);
 	        if(score<best_score){
 		    best_score = score;
 		    best_path = new_population[i];
-		    #ifdef GRAPH
+		    #ifdef GRAPH //TODO così disegna anche se il nuovo percorso non è migliore del precedente
 		    mtx.lock();
 	            draw.clear();
 	            draw.print_city(city.x, city.y);
@@ -71,13 +72,13 @@ void GA::evolution_thread(){
 	        new_affinities[i] = 1/(score+1);
 	        sum += new_affinities[i];
 	    }
-	    for(i=0; i<pop_size; i++){
+	    // normalize
+	    for(i=0; i<pop_thread; i++){
 	        new_affinities[i] = new_affinities[i]/sum;
     	    }
+	    // evolve
 	    population.population = new_population;
 	    population.affinities = new_affinities;
-	
-	    counter++;
         }
     };
 
@@ -87,7 +88,7 @@ void GA::evolution_thread(){
     for(int t=0; t<nw; t++)
         threads[t].join();
 
-    std::cout << "Executed " << counter << " iterations" << std::endl;
+    std::cout << "Every single of the " << nw << " threads executed " << iterations << "with a population of " << pop_thread << std::endl;
 }
 
 #ifdef GRAPH
@@ -143,11 +144,61 @@ void GA::evolution_ff(Draw draw){
 #else
 void GA::evolution_ff(){
 #endif
-    #ifdef GRAPH
-        evolution_thread(draw);
-    #else
-	evolution_thread();
-    #endif
+
+    struct firstStage: ff_node_t<float> {
+        firstStage(const size_t length):length(length) {}
+        float* svc(float *) {
+            for(size_t i=0; i<length; ++i) {
+                ff_send_out(new float(i));
+            }
+            return EOS;
+        }
+        const size_t length;
+    };
+    struct secondStage: ff_node_t<float> {
+        float* svc(float * task) { 
+            float &t = *task;
+        
+            std::cout << "secondStage" << get_my_id() << " received " << t << "\n";
+
+            t = t*t;
+            return task; 
+        }
+    };
+    struct thirdStage: ff_node_t<float> {
+        float* svc(float * task) { 
+            float &t = *task;
+            //std::cout<< "thirdStage received " << t << "\n";
+            sum += t; 
+            delete task;
+            return GO_ON; 
+        }
+        void svc_end() { std::cout << "sum = " << sum << "\n"; }
+        float sum = 0.0;
+    };
+
+    const size_t nworkers = 5;
+    firstStage  first(1000);
+    thirdStage  third;
+
+    ff_Farm<float> farm(
+                        [nworkers]() {
+            std::vector<std::unique_ptr<ff_node>> W;
+            for(size_t i=0;i<nworkers;++i)
+                W.push_back(make_unique<secondStage>());
+            return W;
+        } ()
+                        );
+ 
+    ff_Pipe<> pipe(first, farm, third);
+
+    ffTime(START_TIME);
+    if (pipe.run_and_wait_end()<0) {
+        error("running pipe");
+    }
+    ffTime(STOP_TIME);
+    std::cout << "Time: " << ffTime(GET_TIME) << "\n";
+
 }
 // ********************************* FASTFLOW STUFF /**********************************/
 /*

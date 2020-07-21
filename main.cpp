@@ -75,8 +75,6 @@ int main(int argc, char *argv[]){
 	Draw draw(RADIUS, N_NODES, TOP_BAR);
 	#endif
 
-	Population population(N_NODES, POP_SIZE);
-
 	GA ga(city, RESISTENCE, NW, N_NODES, POP_SIZE, ITERATIONS);
 
 	// ********************************* cycle /**********************************/
