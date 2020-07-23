@@ -3,10 +3,10 @@
 
 VERBOSE=1
 N_NODES=20
-POP_SIZE=10000
+POP_SIZE=1000
 MAX_NW=10
 TRIES=3
-ITERATIONS=10
+ITERATIONS=1000
 
 # ATTENZIONE rimuove risultati precedenti
 rm results/*
@@ -23,8 +23,8 @@ g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp GA.cpp -o demo -pthr
 
 SEQ_TIME=0
 
-# per ogni mode TODO aggiungere fastflow
-for((m=0; m<=1; m++))
+# per ogni mode 
+for((m=0; m<=2; m++))
 do
     if [[ $VERBOSE == 1 ]]
         then echo "Work $m"

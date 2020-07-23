@@ -10,7 +10,6 @@
 #include <atomic>
 #include <thread>
 #include <vector>
-#include <ff/parallel_for.hpp>
 #include <cmath>  // sqrt
 #include <math.h> // pow
 #include <time.h> // time
@@ -21,11 +20,13 @@
 #include <ff/ff.hpp>
 #include <ff/pipeline.hpp>
 #include <ff/farm.hpp>
+#include <tuple>
 using namespace ff;
 
 #include "utilities.h"
 #include "City.h"
 #include "Population.h"
+#include "utimer.cpp"
 
 #ifdef GRAPH
 #include "Draw.h"

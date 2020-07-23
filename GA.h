@@ -12,13 +12,13 @@ class GA{
         GA(City&, double, int, int, int, int);
 
 	#ifdef GRAPH
-            void evolution_seq(Draw);
-            void evolution_thread(Draw);
-            void evolution_ff(Draw);
+            long evolution_seq(Draw);
+            long evolution_thread(Draw);
+            long evolution_ff(Draw);
 	#else
-	    void evolution_seq();
-            void evolution_thread();
-            void evolution_ff();
+	    long evolution_seq();
+            long evolution_thread();
+            long evolution_ff();
 	#endif
 
 

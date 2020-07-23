@@ -8,21 +8,10 @@
  * Professors: Danelutto, Torquati
  *
  * Description: this is the project implementation
- * 
- *
- * Example of usage: ./demo 20 120 4
  *
  */
 
-// compile:  g++ -Wall -g *.cpp -o demo -pthread -lgraph
-// debug: gdb --args ./demo 4 4 4
-
-// SI possono definire durante la compilazione con i comandi -DGRAPH -DVERBOSE
-//#define GRAPH
-//#define VERBOSE
-
 //TODO aggiungere costo relativo tempo overhead
-//TODO fare implementazione con farm/map usando ff
 //TODO prendere i tempi ed usarli in modo furbo con rplsh
 //TODO provare vtune-gui
 
@@ -46,7 +35,7 @@ int main(int argc, char *argv[]){
 	int ITERATIONS=3;
 
 	// check if any arguments is given
-	if(argc > 1){
+	//if(argc > 1){
 	    //wrong arguments number
  	    if (argc != 6) {
     	        errno = EINVAL;
@@ -65,7 +54,7 @@ int main(int argc, char *argv[]){
     	        perror("Usage: {0:SEQ 1:THREAD 2:FF} N_NODES POP_SIZE NW ITERATIONS\n");
     	        return -1;
 	    }
-	}
+	//}
 
 	// ********************************* getting ready /**********************************/
 	std::cout << "Genetic algorithm for Traveling Salesman problem @Berti Stefano" << std::endl;
@@ -79,53 +68,41 @@ int main(int argc, char *argv[]){
 
 	// ********************************* cycle /**********************************/
 	 // timer
-	high_resolution_clock::time_point program_start = high_resolution_clock::now();
+	long time;
 
 	switch(MODE){
 	    case 0: // sequential
 		std::cout << "Sequential version" << std::endl;
 		#ifdef GRAPH
-		    ga.evolution_seq(draw);
+		    time = ga.evolution_seq(draw);
 		#else
-		    ga.evolution_seq();
+		    time = ga.evolution_seq();
 		#endif
 		break;
 	    case 1: // thread
 		std::cout << "Thread version" << std::endl;
 		#ifdef GRAPH
-		    ga.evolution_thread(draw);
+		    time = ga.evolution_thread(draw);
 		#else
-		    ga.evolution_thread();
+		    time = ga.evolution_thread();
 		#endif
 		break;
 	    case 2: // fastflow
 		std::cout << "FastFlow version" << std::endl;
 		#ifdef GRAPH
-		    ga.evolution_ff(draw);
+		    time = ga.evolution_ff(draw);
 		#else
-		    ga.evolution_ff();
+		    time = ga.evolution_ff();
 		#endif
 		break;
 	}
 
-	    /*#ifdef GRAPH
-	    if(population.min_length < best){
-	        draw.clear();
-	        draw.print_city(city.x, city.y);
-	        draw.print_best_one(population.best_one, city.x, city.y);
-		best = population.min_length;
-	    }
-	    //draw.print_info(i, POP_SIZE, NW, program_time, N_NODES);
-	    #endif*/
-
-
 
 	// ********************************* print time /**********************************/
 
-	auto program_time = duration_cast<microseconds>(high_resolution_clock::now() - program_start).count();
 	std::cout.flush();
 	std::cout << std::endl;
-	std::cout << "Microseconds for " << ITERATIONS << " loops: " << std::fixed << program_time << std::endl;
+	std::cout << "Microseconds for " << ITERATIONS << " loops: " << std::fixed << time << std::endl;
 
 	#ifdef GRAPH
 	draw.close();
