@@ -10,7 +10,7 @@ City::City(int gap_x, int gap_y, int b, int n, int t){
 }
 
 void City::generate_graph(){ // generate points, having gaps and border to avoid, y doesn't spawn in first 2*border pixels
-    srand(time(NULL));
+    srand(5);
     for(int i=0; i<n_nodes; i++){
         x[i] = (rand() % (x_gap-border*2)) + border;
         y[i] = (rand() % (y_gap-top_bar-border*2)) + border + top_bar;

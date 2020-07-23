@@ -110,7 +110,11 @@ long GA::evolution_thread(){
 
 	    // create new population and calculate score, then set it as population actual attribute
 	    for(i=0; i<pop_thread; i++){
+		//auto start = std::chrono::system_clock::now();
 	        new_population[i] = population.crossover(pick_candidate(population.affinities), pick_candidate(population.affinities), resistence);
+		//auto end = std::chrono::system_clock::now();
+		//auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+		//std::cout << "Pick_candidate*2 elapsed time:" << elapsed.count() << std::endl;
 	        score = city.path_length(new_population[i]);
 	        if(score<best_score){
 		    best_score = score;
