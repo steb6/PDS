@@ -6,12 +6,15 @@ class Population{
         int n_nodes = 0;
 
     public:
+
+	MyRandom &myrandom;
+
         std::vector<std::vector<int>> population;
         std::vector<double> affinities;
 	double min_length;
         std::vector<int> best_one;
 
-	Population(int, int);
+	Population(int, int, MyRandom&);
 
 	void generate_population();
 	void generate_population_thread(int);
@@ -20,5 +23,6 @@ class Population{
 
 	std::vector<int> crossover(int, int, double);
 	std::vector<int> mutation(std::vector<int>, double);
+	int pick_candidate();
 
 };

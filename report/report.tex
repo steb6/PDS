@@ -46,6 +46,16 @@
 	To calculate the length of each path, I use a random generated city, where for each node number we have the relative coordinates. The city can also be plotted for
 	real time problem resolution visualization, but this has heavy consequences on the program performances.
 
+    \begin{figure}
+        \includegraphics[width=\linewidth]{img/init.png}
+        \caption{Initial problem with 20 nodes}
+        \label{fig:init}
+    \end{figure}
+    \begin{figure}
+        \includegraphics[width=\linewidth]{img/sol.png}
+        \caption{Solution found after some iterations}
+        \label{fig:sol}
+    \end{figure}
 
     \section{A first approach}\label{sec:s2}
 	The first approach that i though was a pipeline with feedback composed by a farm for calculting the length of each path, a collector to compute sum and to normalize
@@ -94,6 +104,9 @@
     \section{Performance: remote analisy}\label{sec:s4}
 	Something weird happens when we try to measure the same thing on the remote machine
 \end{document}
+
+    \section{Other improvements}
+	We always compile our code with the -O3 flag in order to make other optimizations, like vetorization, which occours in various places: when we push work in the farm of ff, the main loop of the Evolution node of ff (basic block), the affinities normalization, the main loop of the thread (basic block), the normalization in sequential part, the loop for start the thread, the loop for generate the population. I tried to parallelize other part of the code, for example the random inizialization of the city and of the population, but I didn't get enough improvements, so I removed it.
 
 
 % \textbf{Micro-Recall}

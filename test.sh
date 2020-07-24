@@ -3,10 +3,10 @@
 
 VERBOSE=1
 N_NODES=20
-POP_SIZE=10000
-MAX_NW=10
+POP_SIZE=1000
+MAX_NW=15
 TRIES=3
-ITERATIONS=10
+ITERATIONS=100
 
 # ATTENZIONE rimuove risultati precedenti
 rm results/*
@@ -16,7 +16,7 @@ if [[ $VERBOSE == 1 ]]
     then echo "Compiling..."
 fi
 
-g++ -Wall -g City.cpp main.cpp utilities.cpp Population.cpp GA.cpp -o demo -pthread -O3
+make compile
 # -fopt-info-vec
 # UI
 #g++ -Wall -g *.cpp -o demo -pthread -lgraph -DGRAPH -O3

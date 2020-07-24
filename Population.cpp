@@ -2,7 +2,7 @@
 
 using namespace ff;
 
-Population::Population(int p, int n){
+Population::Population(int p, int n, MyRandom& mr): myrandom(mr){
 	pop_size = p;
 	n_nodes = n;
 	population = std::vector<std::vector<int>>(pop_size);
@@ -61,8 +61,8 @@ std::vector<int> Population::crossover(int a, int b, double resistence){
     if(a==b)
 	return mutation(population[a], resistence); // same path
 
-    int i = rand()%n_nodes;
-    int j = rand()%n_nodes;
+    int i = myrandom.get_random_node();
+    int j = myrandom.get_random_node();
 
     if(i==j)
         return mutation(population[a], resistence); // |list to change| = 0
@@ -94,10 +94,11 @@ std::vector<int> Population::crossover(int a, int b, double resistence){
 }
 
 std::vector<int> Population::mutation(std::vector<int> a, double resistence){
-    int i = rand()%n_nodes;
-    int j = rand()%n_nodes;
 
-    double r = ((double) rand() / (RAND_MAX));
+    int i = myrandom.get_random_node();
+    int j = myrandom.get_random_node();
+
+    double r = myrandom.get_real_number();
     if(r<resistence || i==j)
         return a;
 
@@ -105,4 +106,17 @@ std::vector<int> Population::mutation(std::vector<int> a, double resistence){
     a[i] = a[j];
     a[j] = aux;
     return a;
+}
+
+int Population::pick_candidate(){
+
+    double r = myrandom.get_real_number();
+    int i=0;
+    while(r>0){
+	r -= affinities[i];
+	i++;
+    }
+    i--;
+
+    return i;
 }

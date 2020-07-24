@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.4.27)  24 JUL 2020 18:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.4.27)  24 JUL 2020 19:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -55,15 +55,6 @@ LaTeX Warning: Label `sec:s4' multiply defined.
 
 
 LaTeX Warning: Label `fig:local_time' multiply defined.
-
-
-LaTeX Warning: Label `sec:s2' multiply defined.
-
-
-LaTeX Warning: Label `sec:s3' multiply defined.
-
-
-LaTeX Warning: Label `sec:s4' multiply defined.
 
 )
 \openout1 = `report.aux'.
@@ -151,56 +142,67 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 30.
-<img/first.png, id=1, 723.70375pt x 370.38374pt>
+<img/init.png, id=1, 381.22424pt x 286.06876pt>
+File: img/init.png Graphic file (type png)
+<use img/init.png>
+Package pdftex.def Info: img/init.png  used on input line 50.
+(pdftex.def)             Requested size: 345.0pt x 258.88687pt.
+<img/sol.png, id=3, 383.63326pt x 287.27325pt>
+File: img/sol.png Graphic file (type png)
+<use img/sol.png>
+Package pdftex.def Info: img/sol.png  used on input line 55.
+(pdftex.def)             Requested size: 345.0pt x 258.34628pt.
+<img/first.png, id=4, 723.70375pt x 370.38374pt>
 File: img/first.png Graphic file (type png)
 <use img/first.png>
-Package pdftex.def Info: img/first.png  used on input line 54.
+Package pdftex.def Info: img/first.png  used on input line 64.
 (pdftex.def)             Requested size: 345.0pt x 176.56708pt.
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-<img/second.png, id=13, 482.80376pt x 322.20375pt>
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2 <./img/init.png>] [3 <.
+/img/sol.png>]
+<img/second.png, id=23, 482.80376pt x 322.20375pt>
 File: img/second.png Graphic file (type png)
 <use img/second.png>
-Package pdftex.def Info: img/second.png  used on input line 63.
+Package pdftex.def Info: img/second.png  used on input line 73.
 (pdftex.def)             Requested size: 345.0pt x 230.2461pt.
- [2 <./img/first.png>]
-<img/local_20_10000_100_p.png, id=18, 642.4pt x 481.8pt>
+
+[4 <./img/first.png>]
+<img/local_20_10000_100_p.png, id=28, 642.4pt x 481.8pt>
 File: img/local_20_10000_100_p.png Graphic file (type png)
 <use img/local_20_10000_100_p.png>
-Package pdftex.def Info: img/local_20_10000_100_p.png  used on input line 73.
+Package pdftex.def Info: img/local_20_10000_100_p.png  used on input line 83.
 (pdftex.def)             Requested size: 345.0pt x 258.75659pt.
-<img/local_20_10000_100_p_t.png, id=19, 642.4pt x 481.8pt>
+<img/local_20_10000_100_p_t.png, id=29, 642.4pt x 481.8pt>
 File: img/local_20_10000_100_p_t.png Graphic file (type png)
 <use img/local_20_10000_100_p_t.png>
-Package pdftex.def Info: img/local_20_10000_100_p_t.png  used on input line 78.
+Package pdftex.def Info: img/local_20_10000_100_p_t.png  used on input line 88.
 
 (pdftex.def)             Requested size: 345.0pt x 258.75659pt.
-<img/local_20_10000_100_rand.png, id=20, 642.4pt x 481.8pt>
+<img/local_20_10000_100_rand.png, id=30, 642.4pt x 481.8pt>
 File: img/local_20_10000_100_rand.png Graphic file (type png)
 <use img/local_20_10000_100_rand.png>
-Package pdftex.def Info: img/local_20_10000_100_rand.png  used on input line 84
+Package pdftex.def Info: img/local_20_10000_100_rand.png  used on input line 94
 .
 (pdftex.def)             Requested size: 345.0pt x 258.75659pt.
-<img/local_20_10000_100_rand_t.png, id=21, 642.4pt x 481.8pt>
+<img/local_20_10000_100_rand_t.png, id=31, 642.4pt x 481.8pt>
 File: img/local_20_10000_100_rand_t.png Graphic file (type png)
 <use img/local_20_10000_100_rand_t.png>
 Package pdftex.def Info: img/local_20_10000_100_rand_t.png  used on input line 
-89.
+99.
 (pdftex.def)             Requested size: 345.0pt x 258.75659pt.
- [3 <./img/second.png>]
-[4 <./img/local_20_10000_100_p.png>] [5 <./img/local_20_10000_100_p_t.png>]
-[6 <./img/local_20_10000_100_rand.png>] [7 <./img/local_20_10000_100_rand_t.png
->] (./report.aux)
+ [5 <./img/second.png>] [6 <./img/local_20_10000_100_p.png>] [7 <./img/local_20
+_10000_100_p_t.png>] [8 <./img/local_20_10000_100_rand.png>] [9 <./img/local_20
+_10000_100_rand_t.png>] (./report.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 1476 strings out of 494553
- 21589 string characters out of 6177377
- 81574 words of memory out of 5000000
- 5153 multiletter control sequences out of 15000+600000
+ 1479 strings out of 494553
+ 21659 string characters out of 6177377
+ 81490 words of memory out of 5000000
+ 5154 multiletter control sequences out of 15000+600000
  5158 words of font info for 19 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  41i,6n,25p,1615b,218s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -209,10 +211,10 @@ r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on report.pdf (7 pages, 147174 bytes).
+Output written on report.pdf (9 pages, 162505 bytes).
 PDF statistics:
- 57 PDF objects out of 1000 (max. 8388607)
- 34 compressed objects within 1 object stream
+ 67 PDF objects out of 1000 (max. 8388607)
+ 38 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 31 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 41 words of extra memory for PDF output out of 10000 (max. 10000000)
 

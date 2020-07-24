@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
 	//}
 
 	// ********************************* getting ready /**********************************/
-	std::cout << "Genetic algorithm for Traveling Salesman problem @Berti Stefano" << std::endl;
+	//std::cout << "Genetic algorithm for Traveling Salesman problem @Berti Stefano" << std::endl;
 	City city(X_SIZE, Y_SIZE, RADIUS, N_NODES, TOP_BAR);
 	city.generate_graph();
 	#ifdef GRAPH
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]){
 
 	switch(MODE){
 	    case 0: // sequential
-		std::cout << "Sequential version" << std::endl;
+		//std::cout << "Sequential version" << std::endl;
 		#ifdef GRAPH
 		    time = ga.evolution_seq(draw);
 		#else
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]){
 		#endif
 		break;
 	    case 1: // thread
-		std::cout << "Thread version" << std::endl;
+		//std::cout << "Thread version" << std::endl;
 		#ifdef GRAPH
 		    time = ga.evolution_thread(draw);
 		#else
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 		#endif
 		break;
 	    case 2: // fastflow
-		std::cout << "FastFlow version" << std::endl;
+		//std::cout << "FastFlow version" << std::endl;
 		#ifdef GRAPH
 		    time = ga.evolution_ff(draw);
 		#else
@@ -100,8 +100,8 @@ int main(int argc, char *argv[]){
 
 	// ********************************* print time /**********************************/
 
-	std::cout.flush();
-	std::cout << std::endl;
+	//std::cout.flush();
+	//std::cout << std::endl;
 	std::cout << "Microseconds for " << ITERATIONS << " loops: " << std::fixed << time << std::endl;
 
 	#ifdef GRAPH
