@@ -1,59 +1,53 @@
 #!/bin/bash
-# prova demo con parametri fissi da 1 a 10 thread e fa la media di 10 esecuzioni ognuno
+# average of each execution on TRIES run
 
-VERBOSE=1
 N_NODES=20
 POP_SIZE=1000
 MAX_NW=15
 TRIES=3
 ITERATIONS=100
 
-# ATTENZIONE rimuove risultati precedenti
+# remove old results
 rm results/*
 
-# compila
-if [[ $VERBOSE == 1 ]]
-    then echo "Compiling..."
-fi
-
+# compile
+echo "Compiling..."
 make compile
-# -fopt-info-vec
-# UI
-#g++ -Wall -g *.cpp -o demo -pthread -lgraph -DGRAPH -O3
 
 SEQ_TIME=0
 
-# per ogni mode 
+# for each mode (seq, thread, ff)
 for((m=0; m<=2; m++))
 do
-    if [[ $VERBOSE == 1 ]]
-        then echo "Work $m"
-    fi
+    echo "Work $m"
+
     FILENAME=$m'_'$N_NODES'_'$POP_SIZE'_'$ITERATIONS.dat
     >results/$FILENAME
+
+    # if it is not sequential, create speedup file result
     if [[ $m > 0 ]]
 	then >results/speedup_$FILENAME
     fi
-    # nel range nw [1, MAX_NW]
+    # do it nw times
     for((nw=1; nw<=MAX_NW; nw++))
     do
-	if [[ $VERBOSE == 1 ]]
-	    then echo "./demo $m $N_NODES $POP_SIZE $nw $ITERATIONS"
-	fi
+	echo "./demo $m $N_NODES $POP_SIZE $nw $ITERATIONS"
+
         >aux.txt
-        # esegui TRIES volte il programma e metti i tempi in aux.txt
+        # execute program TRIES times and put results in aux.txt
         for((i=0; i<TRIES; i++))
         do
             TRY=$(./demo $m $N_NODES $POP_SIZE $nw $ITERATIONS | grep loops | awk -F ' ' '{print $5}')
 	    echo "$TRY"  >> aux.txt
         done
-        # fai la media dei numeri in aux.txt e mettili nel results
+
+        # make average of results in aux.txt and save it in T(N)
 	printf "$nw " >> results/$FILENAME
         TN=$(cat aux.txt | awk '{sum += $1} END { printf "%2.f", sum/NR }')
 	echo "$TN" >> results/$FILENAME
 	echo "T(N) here is $TN"
 
-	# save speedup
+	# if it is not sequential, calculate speedup
 	if [[ $m > 0 ]]
 	    then
 		printf "$nw " >> results/speedup_$FILENAME
@@ -73,7 +67,7 @@ do
     fi
 done
 
-# create ideal speedup (just for graphics uses
+# create ideal speedup (just for graphical purpose)
 >results/speedup_ideal.dat
 for((nw=1; nw<=MAX_NW; nw++))
 do
@@ -82,10 +76,10 @@ do
 done
 
 
-#rimuovi files ausiliari
+# remove useless files
 rm aux.txt
 rm demo
 
-# plotta e apri le immagini
-./graph.sh
+# plot results and open plots (works only in local)
+./plot.sh
 feh results/results*.png

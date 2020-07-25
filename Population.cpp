@@ -1,13 +1,10 @@
 #include "dependencies.h"
 
-using namespace ff;
-
 Population::Population(int p, int n, MyRandom& mr): myrandom(mr){
 	pop_size = p;
 	n_nodes = n;
 	population = std::vector<std::vector<int>>(pop_size);
 	affinities = std::vector<double>(pop_size);
-	min_length = DBL_MAX;
 }
 
 void Population::generate_population(){
@@ -20,35 +17,10 @@ void Population::generate_population(){
     }
 }
 
-void Population::generate_population_thread(int nw){
-    std::vector<std::thread> threads;
-    int chunk_size = pop_size/nw;
-
-    auto myJob = [this, chunk_size](int k){
-	for(int i=k*chunk_size; i<(k+1)*chunk_size; i++){
-	    std::vector<int> path = std::vector<int>(n_nodes);
-	    for(int j=0; j<n_nodes; j++) // VECTORIZED
-		path[j] = j;
-	    std::random_shuffle(path.begin(), path.end());
-	    population[i] = path;
-	}
-    };
-
-    // start threads
-    for (int i=0; i<nw; i++)
-        threads.push_back(std::thread(myJob, i));
-    for (int i=0; i<nw; i++)
-        threads[i].join();
-}
-
 void Population::calculate_affinities(City city){
     double sum = 0;
     for(int k=0; k<pop_size; k++){ // calculate score for every member of population
 	double score = city.path_length(population[k]);
-	if(score<min_length){
-	    min_length = score; // index
-	    best_one = population[k]; // path
-	}
 	affinities[k] = 1/(score+1); // invert score (shortest path are better), +1 to avoid crash
 	sum += affinities[k];
     }

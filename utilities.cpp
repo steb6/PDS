@@ -27,8 +27,3 @@ int kbhit(void)
   return 0;
 }
 
-
-void log(int i, int pop_size, int nw, long time, int n_nodes){
-    std::cout << "#" << i << "; pop_size: " << pop_size << "; nw: " << nw << "; #nodes: " << n_nodes << "; time: " << (double)time/1000000 << "; thr: " << ((double)i/(double)time)*1000000 << "\r";
-    std::cout.flush();
-}

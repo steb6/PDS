@@ -1,4 +1,4 @@
-# Plot time
+# Plot times
 i=1
 for FILE in results/0*.dat results/1*.dat results/2*.dat; do
 	case "$FILE" in
@@ -28,7 +28,7 @@ set output "results/results.png"
 plot $command
 EOF
 
-# Plot speedup
+# Plot speedups
 command=''
 i=1
 for FILE in results/speedup*; do
