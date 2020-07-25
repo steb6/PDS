@@ -11,13 +11,14 @@ class GA{
 
     public:
         GA(City&, double, int, int, int, int);
+
 	#ifdef GRAPH
             long evolution_seq(Draw);
-            long evolution_thread(Draw);
-            long evolution_ff(Draw);
-	#else
+        #else
 	    long evolution_seq();
-            long evolution_thread();
-            long evolution_ff();
 	#endif
+
+        long evolution_thread();
+        long evolution_ff();
+
 };
