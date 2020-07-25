@@ -4,8 +4,6 @@ typedef std::mt19937 rng_type;
 
 class MyRandom{
     private:
-	int n_nodes;
-	int pop_size;
 	rng_type rng;
         std::uniform_int_distribution<rng_type::result_type> ndist;
         std::uniform_int_distribution<rng_type::result_type> pdist;

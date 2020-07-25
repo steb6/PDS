@@ -2,10 +2,10 @@
 # average of each execution on TRIES run
 
 N_NODES=20
-POP_SIZE=1000
+POP_SIZE=10000
 MAX_NW=15
 TRIES=3
-ITERATIONS=100
+ITERATIONS=1000
 
 # remove old results
 rm results/*

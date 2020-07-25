@@ -15,7 +15,7 @@ for FILE in results/0*.dat results/1*.dat results/2*.dat; do
 		title="Unknown"
 		;;
 	esac
-	command=$command\"$FILE\"" with linespoints linestyle $i title \"$title\", "
+	command=$command\"$FILE\"" with lines linestyle $i title \"$title\", "
 	i=$i+1
 done
 echo "$command"
@@ -46,7 +46,7 @@ for FILE in results/speedup*; do
 		title="Unknown"
 		;;
 	esac
-	command=$command\"$FILE\"" with linespoints linestyle $i title \"$title\", "
+	command=$command\"$FILE\"" with lines linestyle $i title \"$title\", "
 	i=$i+1
 done
 echo "$command"

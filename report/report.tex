@@ -30,83 +30,117 @@
 	\item C++ standard threads and mutex
 	\item Fastflow library
     \end{itemize}
-
-
     \section{Problem description}\label{sec:s1}
-        The genetic algorithm mimin the natural evolution and selection. In order to do that, we need a population, a way to understand which elements of the population
-	will surivive (and so will reproduce), how they reproduce and how mutations can occour.
-	\begin{itemize}
-	    \item \textbf{Population}: is a matrix (vector of vector), where each row contains a sequence of number, and each number represent a node
-	    \item \textbf{Affinity}: for each element x is the probability that x will be selected for reproduction, and is calculated as the inverse of the path length,
-	        normalize w.r.t. all other elements in order to obtain a proper probability
-	    \item \textbf{Reproduction}: 2 paths A and B can create a new path C by generating 2 random numbers i and j and putting the subsequence B[i, j] in A
-	    \item \textbf{Mutation}: a mutation occour with a certain probability to every generated path, and it is a random shuffle of two position in the paths.
-		The probability that a mutation does not occour is 0.9.
-	\end{itemize}
-	To calculate the length of each path, I use a random generated city, where for each node number we have the relative coordinates. The city can also be plotted for
-	real time problem resolution visualization, but this has heavy consequences on the program performances.
 
     \begin{figure}
-        \includegraphics[width=\linewidth]{img/init.png}
+        \includegraphics[width=\linewidth, height=8cm]{img/init.png}
         \caption{Initial problem with 20 nodes}
         \label{fig:init}
     \end{figure}
     \begin{figure}
-        \includegraphics[width=\linewidth]{img/sol.png}
+        \includegraphics[width=\linewidth, height=8cm]{img/sol.png}
         \caption{Solution found after some iterations}
         \label{fig:sol}
     \end{figure}
+        The genetic algorithm mimic the natural evolution and selection. In order to do that, we need a population, a way to assign a probability about which elements of the population will surivive (and so will reproduce), how they reproduce and how a mutation can occour.
+	\begin{itemize}
+	    \item \textbf{Population}: it is a matrix (vector of vector), where each row contains a sequence of number, and each number represent a node
+	    \item \textbf{Affinity}: for each element x is the probability that x will be selected for reproduction, and is calculated as the inverse of the path length, normalized w.r.t. all other elements in order to obtain a proper probability
+	    \item \textbf{Reproduction}: 2 paths A and B can create a new path C by generating 2 random numbers i and j and putting the subsequence B[i, j] in A
+	    \item \textbf{Mutation}: a mutation occour with a certain probability to every generated path, and it is a random shuffle of two position in the paths. The probability that a mutation does not occour is 0.9, which is a good trade-off (too high leads to casuality, too low leads to no evolution).
+	\end{itemize}
+	To calculate the length of each path, I use a random generated city, where for each node number we have the relative coordinates, picked up randomly in a window of size 640x480. It is possible to plot the city and the best solution found till that moment at runtime by compiling with \textbf{make compile-graph}, this is available only for the sequential version and has huge impact on the performance, but shows the correctness of the algorithm. This algorithm is not guaranteed to find the best solution of the problem, which is a NP problem, but can find a good starting point.
+
+
 
     \section{A first approach}\label{sec:s2}
-	The first approach that i though was a pipeline with feedback composed by a farm for calculting the length of each path, a collector to compute sum and to normalize
-	each path length in order to obtain probability, and another farm for the reproduction stage
+	The first approach that I though was a pipeline with feedback composed by a farm for calculting the length of each path, a collector to compute sum and to normalize each path length in order to obtain probability, and another farm for the reproduction stage. Each worker had its own chunk of the population/affinities to compute, and the fastflow version was implemented with a parallelforreduce to compute the sum while computing the length of each path, and a parallelfor to compute the new population. We also had some false sharing, due to the sharing of the population and affinities data structure and the modification of each worker on different part of it.
     \begin{figure}
         \includegraphics[width=\linewidth]{img/first.png}
         \caption{The first approach}
         \label{fig:first}
     \end{figure}
-    but this apporach lead to a poor speedup, because we need to calculate all length paths and to sum them in order to normalize and get probability to use in the reproduce task. But we can think to a different solution, which drive us to the normal form: when the population is big, the probabilities are all small and not very different, if we assume to have more than one independent populations, we will not make the same computation as before because we are not considering anymore the possibility of crossover among all the elements of the population, but our throughtput will increase and our overall population will have the same size as before.
+    This apporach leads to a poor speedup, because we need to stop after the calculation of the length of each member of the population in order to compute the total sum to divide them and obtain a proper probability, which will be used to select best candidates in the reproduction stage. So the good news is that we are considering a big population and the crossover between each pair of it, but the bad new is that we need to syncronize each evolution phase. But we can think to a different solution, which drives us to the normal form: when the population is big, the probabilities are all small and not very different because the path lengths don't differ too much, if we assume to have more than one independent populations, we will not make the same computation as before because we are not considering anymore the possibility of crossover among each pair og the elements of the population, but our throughtput will increase more rapidly, and we can expect a linear speedup.
 
     \section{The second approach}\label{sec:s3}
-	This approach is a simple farm of composition of the sequential stage "evolve", which is a combination of the two stages "calculate affinities" and "reproduce"
+	This approach is a simple farm over the task \textbf{evolve}, which is a composition of the two stages \textbf{calculate affinities} and \textbf{reproduce}.
+The service time of the farm is
+
+	\centerline{$\max{T_{scheduler}, T_{w}/nw, T_{gatherer}}$}
+
+    and the times of the scheduler and the gatherer are negligible, because the scheduler just starts the computation and the gatherer just selects the best result over the nw ones returned by the workers. So, by increasing the number of workers, I expect to see a linear speedup. My machine has 5 cores, so I also expect to have the \textbf{knee} at 5 workers. The heaviest data structure is the \textbf{population} one, which has dimension 0.8MB (4 byte(int) * 20 * 10000), while affinities has size 0.08MB (8byte(double) * 10000) and city as a very small size around 320byte (8byte(double) * 2 * 20). My cpu has 3 caches L1, L2 and L3 of size respectively 9MB, 1.5MB and 350KB, so we also expect to have a superlinear speedup at a certain point due to the population data structure fitting in the L3 cache. 
+    I need to distinguish 2 cases because of I tried 2 different way to chose the elements that will be reproduced, and they give different performances. The results obtained locally are averaged on 3 runs, the results obtained on the remote machine are averaged on 5 runs.
+
+	\subsection{Pick}\label{sec:s31}
+I create a function called pick candidate, that select one element considering the probabilities. This function cost O(n) in the worst case, where n is the populaton size, because it generate a random float and decrease it with the affinities untill it becomes negative, and then select the corresponding index. When we parallelize, we divide the population size with the number of worker, and this lead not only to less element of the population to generate for each worker, but also to a reduction of the time needed to generate each element. So we expect something like a double of the linear speedup, motivated not only by the hardware, but because of the way I implemented the logic code.
+
+
+	\subsection{Rand}\label{sec:s32}
+The path length are not so different, so the affinities are almost all equal and the pick candidate function selects almost randomly the two elements of the population that will reproduce. Considering that pick candidate cost O(n) in the worst case, leading to difficultly predictable performance, I tried to replace it with a simple randomized selection of the two elements, with a cost of O(1). In this way, we can expect a linear speedup because by increasing the number of workers, we only have less elements of the population to create, but the cost to create each one is always the same.
+
     \begin{figure}
         \includegraphics[width=\linewidth]{img/second.png}
         \caption{The second and final approach}
         \label{fig:second}
     \end{figure}
-    this computation model is also known as normal form, and it is teorically the best way to set out computation. The resulting speedup is more than linear because as the population gets smaller, the pick\_candidate function has less element to get (for example, with a population of 10000, it spends around 30ms, while with a population of 20000 it spends around 50/60ms). So by parallelizing, we are not only reducing the number of times that we need to create a new member of the population in the main loop, but we are also reducing the time needed to cerate one of them! This will lead to a superscalar speedup, which is not motivated by our hardware, but by the way we implemented the function which select an elements given all elements prpbabilities.
 
-
-    \section{Performance: local analisy}\label{sec:s4}
-	Because of the fact that with the farm we don't reduce only the number of elements of the population that we need to generate at each iteration, but also the time spent to generate each one of them, the times and speedup that we obtain are more than linear, how can be ween in the picture
     \begin{figure}
-        \includegraphics[width=\linewidth]{img/local_20_10000_100_p.png}
-        \caption{Local speedup with 20 nodes, 10000 elements of population and 100 iterations}
+        \includegraphics[width=\linewidth,height=8cm]{img/local_s_pick.png}
+        \caption{Local speedup using pick candidate with 20 nodes, 10000 elements of population and 1000 iterations}
         \label{fig:local_speedup}
     \end{figure}
+
     \begin{figure}
-        \includegraphics[width=\linewidth]{img/local_20_10000_100_p_t.png}
-        \caption{Local time with 20 nodes, 10000 elements of population and 100 iterations}
-        \label{fig:local_time}
-    \end{figure}
-	This case is not easy to analyze, so I modify the code in order to spend O(1) time for the creation of a new element (instead of O(n) in the worst case) by just selecting a random element instead to look to probabilities vector. In this way, the farm has a service time that is what we expected: in the sequential version we have that the population data structure, which is a vector of vector of int, has size 0.8MB (4 byte(int) * 20 * 10000) and the affinities vector has size 0.08MB (8 byte(double) * 10000), and my caches L1, L2, L3 have sizes 9MB, 1.5MB and 0.35MB respectively, so we alwaysfit the L2 caches and with 3 workers, we have a superlinear speedup due to the fact that the data structures fit the L3 cache (the city data structure has negligible dimension, around 20*8*2 byte). I have 5 core in my virtual machine, so the knee is set around 5 workers. The service time of the farm is max{Tw/nw, Tsched, Tgat}, but the scheduler only has to read the parameters from command line, and the gatherer has to see all the nw results to select the best path among them, but the number of workers is low (<<100), so the heaviest part of the computation is let to the worker. We have that our sequential time is 7568352 usec, with threads and 1 worker is 7626354 usec and with fastflow and one worker is 8088780 usec, so they all are very similiar. The thread implementation, like the fastflow implementation implements a simple farm, so the service time is reduced like the expectation, and the thread implementation is a little better because it does not use external library and it is simpler
-    \begin{figure}
-        \includegraphics[width=\linewidth]{img/local_20_10000_100_rand.png}
-        \caption{Local speedup with 20 nodes, 10000 elements of population and 100 iterations}
-        \label{fig:local_speedup}
-    \end{figure}
-    \begin{figure}
-        \includegraphics[width=\linewidth]{img/local_20_10000_100_rand_t.png}
-        \caption{Local time with 20 nodes, 10000 elements of population and 100 iterations}
+        \includegraphics[width=\linewidth,height=8cm]{img/local_t_pick.png}
+        \caption{Local time using pick candidate with 20 nodes, 10000 elements of population and 1000 iterations}
         \label{fig:local_time}
     \end{figure}
 
-    \section{Performance: remote analisy}\label{sec:s4}
-	Something weird happens when we try to measure the same thing on the remote machine
-\end{document}
+    \begin{figure}
+        \includegraphics[width=\linewidth,height=8cm]{img/local_s_rand.png}
+        \caption{Local speedup using random selection with 20 nodes, 10000 elements of population and 1000 iterations}
+        \label{fig:local_speedup}
+    \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=\linewidth,height=8cm]{img/local_t_rand.png}
+        \caption{Local time using random selection with 20 nodes, 10000 elements of population and 1000 iterations}
+        \label{fig:local_time}
+    \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=\linewidth,height=8cm]{img/remote_s_pick.png}
+        \caption{Remote speedup using pick candidate with 20 nodes, 1000 elements of population and 1000 iterations}
+        \label{fig:local_speedup}
+    \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=\linewidth,height=8cm]{img/remote_t_pick.png}
+        \caption{Remote time using pick candidate with 20 nodes, 1000 elements of population and 1000 iterations}
+        \label{fig:local_time}
+    \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=\linewidth,height=8cm]{img/remote_s_rand.png}
+        \caption{Remote speedup using random selection with 20 nodes, 1000 elements of population and 1000 iterations}
+        \label{fig:local_speedup}
+    \end{figure}
+
+    \begin{figure}
+        \includegraphics[width=\linewidth,height=8cm]{img/remote_t_rand.png}
+        \caption{Remote time using random selection with 20 nodes, 1000 elements of population and 1000 iterations}
+        \label{fig:local_time}
+    \end{figure}
+
+    \section{Difficulties}
+	At a certain point, I had a bottleneck in the remote machine that doesn't allow me to have a speedup higher than 3. I investigated this problem for days to find out that my bottleneck was caused by the \textbf{rand()} function. This, together with the pick candidate, made my development and my analysis a lot more difficult.
 
     \section{Other improvements}
-	We always compile our code with the -O3 flag in order to make other optimizations, like vetorization, which occours in various places: when we push work in the farm of ff, the main loop of the Evolution node of ff (basic block), the affinities normalization, the main loop of the thread (basic block), the normalization in sequential part, the loop for start the thread, the loop for generate the population. I tried to parallelize other part of the code, for example the random inizialization of the city and of the population, but I didn't get enough improvements, so I removed it.
+	I always compile my code with the -O3 flag in order to make other optimizations, like vectorization, which occour in various places: when we push work in the farm of FastFlow, in the main loop of the Evolution node of FastFlow (basic block), the affinities normalization, in the main loop of the thread (basic block), in the normalization of the sequential part, in the loop that starts the thread, int the loop that generates the population. I tried to parallelize other part of the code, for example the random inizialization of the city and of the population, but I didn't get enough improvements, so I removed it.
+
+\end{document}
+
+
 
 
 % \textbf{Micro-Recall}
