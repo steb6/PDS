@@ -72,11 +72,30 @@ The service time of the farm is
     I need to distinguish 2 cases because of I tried 2 different way to chose the elements that will be reproduced, and they give different performances. The results obtained locally are averaged on 3 runs, the results obtained on the remote machine are averaged on 5 runs.
 
 	\subsection{Pick}\label{sec:s31}
-I create a function called pick candidate, that select one element considering the probabilities. This function cost O(n) in the worst case, where n is the populaton size, because it generate a random float and decrease it with the affinities untill it becomes negative, and then select the corresponding index. When we parallelize, we divide the population size with the number of worker, and this lead not only to less element of the population to generate for each worker, but also to a reduction of the time needed to generate each element. So we expect something like a double of the linear speedup, motivated not only by the hardware, but because of the way I implemented the logic code.
+I create a function called pick candidate, that select one element considering the probabilities. This function cost O(n) in the worst case, where n is the populaton size, because it generate a random float and decrease it with the affinities untill it becomes negative, and then select the corresponding index. When we parallelize, we divide the population size with the number of worker, and this lead not only to less element of the population to generate for each worker, but also to a reduction of the time needed to generate each element, because of the O(n) of pick candidate. So we expect something like a double of the linear speedup, motivated not only by the hardware, but because of the way I implemented the logic code.
 
 
 	\subsection{Rand}\label{sec:s32}
 The path length are not so different, so the affinities are almost all equal and the pick candidate function selects almost randomly the two elements of the population that will reproduce. Considering that pick candidate cost O(n) in the worst case, leading to difficultly predictable performance, I tried to replace it with a simple randomized selection of the two elements, with a cost of O(1). In this way, we can expect a linear speedup because by increasing the number of workers, we only have less elements of the population to create, but the cost to create each one is always the same.
+
+        \begin{table}[h!]
+            \begin{center}
+                \caption{Expected service time, real service time, difference between the two (overhead) and relative overhead for local randomized solution with 20 nodes, 10000 size of population and 1000 iterations (time in microseconds). My machine has 5 cores.}
+                \label{tab:table1}
+                \begin{tabular}{c|c|c|c|c}
+                    \textbf{nw} & \textbf{T(nw)} & \textbf{(T(1)/nw)} & \textbf{diff (overhead)} & \textbf{T(nw)/diff}\\
+                    \hline
+                        1 & 23334944 & 2341742 & 0 & 0\%\\
+                        2 & 11828148 & 11667472 & 160676 & 1.3\%\\
+			3 & 7937058 & 7778314 & 158743 & 2\%\\
+			4 & 6065433 & 5833736 & 231697 & 3.8\%\\
+			5 & 5055524 & 4666988 & 388536 & 7.6\%\\
+			6 & 4975386 & 3889157 & 1086229 & 21\%\\
+			7 & 5210023 & 3333563 & 1876460 & 36\%\\
+                \end{tabular}
+            \end{center}
+        \end{table}
+
 
     \begin{figure}
         \includegraphics[width=\linewidth]{img/second.png}
@@ -133,42 +152,9 @@ The path length are not so different, so the affinities are almost all equal and
     \end{figure}
 
     \section{Difficulties}
-	At a certain point, I had a bottleneck in the remote machine that doesn't allow me to have a speedup higher than 3. I investigated this problem for days to find out that my bottleneck was caused by the \textbf{rand()} function. This, together with the pick candidate, made my development and my analysis a lot more difficult.
+	At a certain point, I had a bottleneck in the remote machine that doesn't allow me to have a speedup higher than 3. I investigated this problem for days to find out that my bottleneck was caused by the \textbf{rand()} function. This, together with the pick candidate, made my development and my analysis a lot more difficult. To overcome this issue, i create the MyRandom class, which sets up the 3 differents uniform distribution that I use in the program, that are [0, n\_nodes)(int), [0, pop\_size)(int) and [0, 1](double).
 
     \section{Other improvements}
 	I always compile my code with the -O3 flag in order to make other optimizations, like vectorization, which occour in various places: when we push work in the farm of FastFlow, in the main loop of the Evolution node of FastFlow (basic block), the affinities normalization, in the main loop of the thread (basic block), in the normalization of the sequential part, in the loop that starts the thread, int the loop that generates the population. I tried to parallelize other part of the code, for example the random inizialization of the city and of the population, but I didn't get enough improvements, so I removed it.
 
 \end{document}
-
-
-
-
-% \textbf{Micro-Recall}
-
-            %\begin{figure}
-                %\includegraphics[width=\linewidth]{../experiments/acp/no_onehot.png}
-                %\caption{Training plot for acp task with only two classes [positive, negative]}
-                %\label{fig:train-acd-no-onehot}
-            %\end{figure}
-                %\begin{figure}
-                %\includegraphics[width=\linewidth]{../experiments/acp/without_preprocessing.png}
-                %\caption{Training plot for acp task with 3 output neurons, but embeddings coverage of 85\% instead of 95\%}
-                %\label{fig:train-acd-no-preprocessing}
-            %\end{figure}
-
-
-% $micro-recall$ and $f1-score$.
-
-
-%        \begin{table}[h!]
-%            \begin{center}
-%                \caption{element for class}
-%                \label{tab:table1}
-%                \begin{tabular}{l|c|c|c|r}
-%                    \textbf{data} & \textbf{positive} & \textbf{neutral} & \textbf{mixed} & \textbf{negative}\\
-%                    \hline
-%                        train & 4942 & 0 & 173 & 3797\\
-%                        test & 2080 & 0 & 64 & 1757\\
-%                \end{tabular}
-%            \end{center}
-%        \end{table}

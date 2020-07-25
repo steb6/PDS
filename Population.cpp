@@ -81,7 +81,7 @@ std::vector<int> Population::mutation(std::vector<int> a, double resistence){
 }
 
 int Population::pick_candidate(){
-    //return myrandom.get_random_pop();
+    return myrandom.get_random_pop();
     double r = myrandom.get_real_number();
     int i=0;
     while(r>0){
