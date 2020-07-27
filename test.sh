@@ -1,11 +1,12 @@
 #!/bin/bash
 # average of each execution on TRIES run
 
+#best with 20 1000 100
 N_NODES=20
 POP_SIZE=1000
 MAX_NW=15
 TRIES=3
-ITERATIONS=100
+ITERATIONS=1000
 
 # remove old results
 rm results/*

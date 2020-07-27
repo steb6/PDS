@@ -29,9 +29,13 @@ void Population::calculate_affinities(City city){
 }
 // ********************************* crossover and mutation /**********************************/
 
-std::vector<int> Population::crossover(int a, int b, double resistence, City city){
+std::vector<int> Population::crossover(int a, int b, double resistence, City city, double crossover_prob){
     if(a==b)
 	return mutation(population[a], resistence, city); // same path
+
+    double r = myrandom.get_real_number();
+    if(r<crossover_prob)
+        return mutation(population[a], resistence, city); // same path
 
     std::vector<int> dad = std::vector<int>(n_nodes);
     std::vector<int> mom = std::vector<int>(n_nodes);
@@ -99,7 +103,7 @@ std::vector<int> Population::mutation(std::vector<int> a, double resistence, Cit
 }
 
 int Population::pick_candidate(){
-    return myrandom.get_random_pop();
+    //return myrandom.get_random_pop();
     double r = myrandom.get_real_number();
     int i=0;
     while(r>0){

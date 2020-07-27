@@ -20,6 +20,7 @@
 #define X_SIZE 640
 #define Y_SIZE 480
 #define RESISTENCE 0.9 // probability that a mutation DOES NOT happen
+#define CROSSOVER_PROB 0.9 // probability that a crossover DOES happen
 
 using namespace std::chrono;
 
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]){
 	// ********************************* getting ready /**********************************/
 	City city(X_SIZE, Y_SIZE, RADIUS, N_NODES);
 	city.generate_graph(CONNECTION_PROB);
-	GA ga(city, RESISTENCE, NW, N_NODES, POP_SIZE, ITERATIONS);
+	GA ga(city, RESISTENCE, NW, N_NODES, POP_SIZE, ITERATIONS, CROSSOVER_PROB);
 
 	// ********************************* cycle /**********************************/
 	 // timer

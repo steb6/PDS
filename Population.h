@@ -17,6 +17,6 @@ class Population{
 
 	void calculate_affinities(City);
 
-	std::vector<int> crossover(int, int, double, City city);
+	std::vector<int> crossover(int, int, double, City, double);
 	int pick_candidate();
 };

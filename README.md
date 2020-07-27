@@ -1,9 +1,17 @@
-// Esecuzione su macchina virtuale:
+To compile
+- make compile
 
-131.114.136.132 c6320p-2.itc.unipi.it phi19
-salvato in /etc/hosts
+To execute
+- sequential version: ./demo 0 #NODES #POPULATION 0 #ITERATIONS
+- thread version: ./demo 1 #NODES #POPULATION 1 #ITERATIONS
+- fastflow version: ./demo 2 #NODES #POPLATION 2 #ITERATIONS
 
-inserito in .baschrc la linea
-export LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH
-rm Draw*
+To execute graphical version
+- make compile-graph
+- ./demo 0 #NODES #POPULATION 0 #ITERATIONS
 
+To compile debug version
+- make compile-debug
+
+Example of usage
+- ./demo 1 20 1000 4 1000

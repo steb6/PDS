@@ -1,11 +1,12 @@
 #include "dependencies.h"
 
-GA::GA(City& c, double r, int w, int n, int p, int i) : city(c){
+GA::GA(City& c, double r, int w, int n, int p, int i, double cp) : city(c){
     resistence = r;
     nw = w;
     n_nodes = n;
     pop_size = p;
     iterations = i;
+    crossover_prob = cp;
 }
 
 #ifdef GRAPH
@@ -36,7 +37,7 @@ long GA::evolution_seq(){
     for(int c=0; c<iterations; c++){
 	sum=0;
 	for(i=0; i<pop_size; i++){
-	    new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city);
+	    new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city, crossover_prob);
 	    score = city.path_length(new_population[i]);
 	    if(score<best_score){
 		best_score = score;
@@ -94,7 +95,7 @@ long GA::evolution_thread(){
 
 	    // create new population and calculate score, then set it as population actual attribute
 	    for(i=0; i<pop_thread; i++){
-	        new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city);
+	        new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city, crossover_prob);
 	        score = city.path_length(new_population[i]);
 	        if(score<best_score){
 		    best_score = score;
@@ -136,13 +137,14 @@ long GA::evolution_thread(){
 
 struct Evolution: ff_node_t<std::tuple<std::vector<int>, double>> {
 
-Evolution(int n_nodes, int pop_ff, int iterations, City city, double resistence): n_nodes(n_nodes), pop_ff(pop_ff), iterations(iterations), city(city), resistence(resistence) {}
+Evolution(int n_nodes, int pop_ff, int iterations, City city, double resistence, double crossover_prob): n_nodes(n_nodes), pop_ff(pop_ff), iterations(iterations), city(city), resistence(resistence), crossover_prob(crossover_prob) {}
 
     int n_nodes;
     int pop_ff;
     int iterations;
     City city;
     double resistence;
+    double crossover_prob;
 
     std::tuple<std::vector<int>, double>* svc(std::tuple<std::vector<int>, double>*) {
 
@@ -167,7 +169,7 @@ Evolution(int n_nodes, int pop_ff, int iterations, City city, double resistence)
 
 	    // create new population and calculate score, then set it as population actual attribute
 	    for(i=0; i<pop_ff; i++){
-		new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city);
+		new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city, crossover_prob);
 		score = city.path_length(new_population[i]);
 		if(score<best_score){
 		    best_score = score;
@@ -217,7 +219,7 @@ long GA::evolution_ff(){
     ff_Farm<float> farm( [&]() {
         std::vector<std::unique_ptr<ff_node> > work;
         for(int i=0;i<nw;++i)
-	    work.push_back(make_unique<Evolution>(n_nodes, pop_ff, iterations, city, resistence));
+	    work.push_back(make_unique<Evolution>(n_nodes, pop_ff, iterations, city, resistence, crossover_prob));
         return work;
     } () );
 
