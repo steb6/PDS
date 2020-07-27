@@ -5,7 +5,7 @@ class Population{
         int pop_size = 0;
         int n_nodes = 0;
 	MyRandom &myrandom;
-	std::vector<int> mutation(std::vector<int>, double);
+	std::vector<int> mutation(std::vector<int>, double, City city);
 
     public:
         std::vector<std::vector<int>> population;
@@ -17,7 +17,6 @@ class Population{
 
 	void calculate_affinities(City);
 
-	std::vector<int> crossover(int, int, double);
+	std::vector<int> crossover(int, int, double, City city);
 	int pick_candidate();
-
 };

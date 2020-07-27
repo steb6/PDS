@@ -36,14 +36,14 @@ long GA::evolution_seq(){
     for(int c=0; c<iterations; c++){
 	sum=0;
 	for(i=0; i<pop_size; i++){
-	    new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence);
+	    new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city);
 	    score = city.path_length(new_population[i]);
 	    if(score<best_score){
 		best_score = score;
 		best_path = new_population[i];
 		#ifdef GRAPH
 	        draw.clear();
-	        draw.print_city(city.x, city.y);
+	        draw.print_city(city.x, city.y, city.adj);
 	        draw.print_best_one(best_path, city.x, city.y);
 		#endif
 	    }
@@ -94,7 +94,7 @@ long GA::evolution_thread(){
 
 	    // create new population and calculate score, then set it as population actual attribute
 	    for(i=0; i<pop_thread; i++){
-	        new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence);
+	        new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city);
 	        score = city.path_length(new_population[i]);
 	        if(score<best_score){
 		    best_score = score;
@@ -167,7 +167,7 @@ Evolution(int n_nodes, int pop_ff, int iterations, City city, double resistence)
 
 	    // create new population and calculate score, then set it as population actual attribute
 	    for(i=0; i<pop_ff; i++){
-		new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence);
+		new_population[i] = population.crossover(population.pick_candidate(), population.pick_candidate(), resistence, city);
 		score = city.path_length(new_population[i]);
 		if(score<best_score){
 		    best_score = score;

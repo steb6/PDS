@@ -29,55 +29,73 @@ void Population::calculate_affinities(City city){
 }
 // ********************************* crossover and mutation /**********************************/
 
-std::vector<int> Population::crossover(int a, int b, double resistence){
+std::vector<int> Population::crossover(int a, int b, double resistence, City city){
     if(a==b)
-	return mutation(population[a], resistence); // same path
+	return mutation(population[a], resistence, city); // same path
+
+    std::vector<int> dad = std::vector<int>(n_nodes);
+    std::vector<int> mom = std::vector<int>(n_nodes);
+
+    do{
+        int i = myrandom.get_random_node();
+        int j = myrandom.get_random_node();
+
+        if(i==j)
+            return mutation(population[a], resistence, city); // |list to change| = 0
+
+        if(i>j){  // i must be < j
+	    int aux = i;
+            i = j;
+	    j = aux;
+        }
+
+	for(int l=0; l<n_nodes; l++) dad[l] = population[a][l];
+	for(int l=0; l<n_nodes; l++) mom[l] = population[b][l];
+
+        std::set<int> removed; // elements of dad in [i, j] inclusive are placed in set
+        for(int k=0; k<j-i+1; k++)
+	    removed.insert(dad[i+k]); // from dad[i+0] to dad[i+j-i] = dad[j] inclusive
+
+        for(int k=0; k<j-i+1; k++){ // elements of dad in [i, j] inclusive must be replaced
+	    int h=0;
+	    for(; h<n_nodes; h++) // if mom[h] is not in removed, i don't need to see again mom[h]
+	        if(removed.find(mom[h])!=removed.end()){ // if h-th elements of mom is in removed
+                    dad[i+k] = mom[h];
+		    removed.erase(removed.find(mom[h]));
+		    break;
+    	        }
+        }
+    }
+    while(!city.is_legal_path(dad));
+
+    return mutation(dad, resistence, city);
+}
+
+std::vector<int> Population::mutation(std::vector<int> a, double resistence, City city){
+
+    double r = myrandom.get_real_number();
+    if(r<resistence)
+        return a;
+
+    std::vector<int> candidate = std::vector<int>(n_nodes);
+
+    do{
+
+    for(int l=0; l<n_nodes; l++) candidate[l] = a[l];
 
     int i = myrandom.get_random_node();
     int j = myrandom.get_random_node();
 
     if(i==j)
-        return mutation(population[a], resistence); // |list to change| = 0
+	continue;
 
-    if(i>j){  // i must be < j
-	int aux = i;
-        i = j;
-	j = aux;
+    int aux = candidate[i];
+    candidate[i] = candidate[j];
+    candidate[j] = aux;
+
     }
-
-    std::vector<int> dad = population[a];
-    std::vector<int> mom = population[b];
-
-    std::set<int> removed; // elements of dad in [i, j] inclusive are placed in set
-    for(int k=0; k<j-i+1; k++)
-	removed.insert(dad[i+k]); // from dad[i+0] to dad[i+j-i] = dad[j] inclusive
-
-    for(int k=0; k<j-i+1; k++){ // elements of dad in [i, j] inclusive must be replaced
-	int h=0;
-	for(; h<n_nodes; h++) // if mom[h] is not in removed, i don't need to see again mom[h]
-	    if(removed.find(mom[h])!=removed.end()){ // if h-th elements of mom is in removed
-                dad[i+k] = mom[h];
-		removed.erase(removed.find(mom[h]));
-		break;
-    	    }
-    }
-
-    return mutation(dad, resistence);
-}
-
-std::vector<int> Population::mutation(std::vector<int> a, double resistence){
-
-    int i = myrandom.get_random_node();
-    int j = myrandom.get_random_node();
-
-    double r = myrandom.get_real_number();
-    if(r<resistence || i==j)
-        return a;
-
-    int aux = a[i];
-    a[i] = a[j];
-    a[j] = aux;
-    return a;
+    while(city.is_legal_path(candidate));
+    return candidate;
 }
 
 int Population::pick_candidate(){
@@ -92,3 +110,4 @@ int Population::pick_candidate(){
 
     return i;
 }
+

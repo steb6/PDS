@@ -15,6 +15,7 @@
 
 #include "dependencies.h"
 
+#define CONNECTION_PROB 0.1
 #define RADIUS 10 // radius of nodes in graphical version
 #define X_SIZE 640
 #define Y_SIZE 480
@@ -23,6 +24,8 @@
 using namespace std::chrono;
 
 int main(int argc, char *argv[]){
+
+        srand(time(NULL));
 
 	// ********************************* input reading /**********************************/
 	int N_NODES=0;
@@ -52,7 +55,7 @@ int main(int argc, char *argv[]){
 
 	// ********************************* getting ready /**********************************/
 	City city(X_SIZE, Y_SIZE, RADIUS, N_NODES);
-	city.generate_graph();
+	city.generate_graph(CONNECTION_PROB);
 	GA ga(city, RESISTENCE, NW, N_NODES, POP_SIZE, ITERATIONS);
 
 	// ********************************* cycle /**********************************/
