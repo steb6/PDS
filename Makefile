@@ -25,4 +25,4 @@ transfer:
 	rsync -azur . s.berti9@phi19:
 
 get:
-	rsync -azur s.berti9@phi19:results /home/stefano/Desktop/PDS
+	rsync -azur s.berti9@phi19:results .
