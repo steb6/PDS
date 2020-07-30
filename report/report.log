@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.4.27)  28 JUL 2020 20:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.4.27)  30 JUL 2020 14:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -156,32 +156,30 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 69.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 69.
-<img/second.png, id=23, 482.80376pt x 322.20375pt>
+
+[4 <./img/first.png>]
+<img/second.png, id=29, 482.80376pt x 322.20375pt>
 File: img/second.png Graphic file (type png)
 <use img/second.png>
 Package pdftex.def Info: img/second.png  used on input line 75.
 (pdftex.def)             Requested size: 345.01053pt x 227.63055pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<img/local_speedup.png, id=24, 642.4pt x 481.8pt>
+<img/local_speedup.png, id=30, 642.4pt x 481.8pt>
 File: img/local_speedup.png Graphic file (type png)
 <use img/local_speedup.png>
 Package pdftex.def Info: img/local_speedup.png  used on input line 101.
 (pdftex.def)             Requested size: 345.0088pt x 227.62228pt.
-<img/local_time.png, id=25, 642.4pt x 481.8pt>
+<img/local_time.png, id=31, 642.4pt x 481.8pt>
 File: img/local_time.png Graphic file (type png)
 <use img/local_time.png>
 Package pdftex.def Info: img/local_time.png  used on input line 107.
 (pdftex.def)             Requested size: 345.0088pt x 227.62228pt.
-<img/remote_speedup.png, id=26, 642.4pt x 481.8pt>
+<img/remote_speedup.png, id=32, 642.4pt x 481.8pt>
 File: img/remote_speedup.png Graphic file (type png)
 <use img/remote_speedup.png>
 Package pdftex.def Info: img/remote_speedup.png  used on input line 113.
 (pdftex.def)             Requested size: 345.0088pt x 227.62228pt.
-[4 <./img/first.png>] [5 <./img/second.png> <./img/local_speedup.png>] [6 <./im
-g/local_time.png> <./img/remote_speedup.png>] [7] [8] (./report.aux) ) 
+ [5 <./img/second.png>] [6 <./img/local_speedup.png> <./img/local_time.png>] [7
+ <./img/remote_speedup.png>] [8] (./report.aux) ) 
 Here is how much of TeX's memory you used:
  1477 strings out of 494553
  21373 string characters out of 6177377
@@ -189,16 +187,16 @@ Here is how much of TeX's memory you used:
  5153 multiletter control sequences out of 15000+600000
  5158 words of font info for 19 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 41i,7n,25p,1030b,241s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/sha
-re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/tex
-live/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmsy10.pfb>
-Output written on report.pdf (8 pages, 186659 bytes).
+ 41i,7n,25p,1420b,241s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.
+pfb>
+Output written on report.pdf (8 pages, 189276 bytes).
 PDF statistics:
  71 PDF objects out of 1000 (max. 8388607)
  42 compressed objects within 1 object stream
