@@ -1,7 +1,7 @@
 #!/bin/bash
 # average of each execution on TRIES run
 
-#best with 20 1000 100
+#best with 20 1000 1000
 N_NODES=20
 POP_SIZE=1000
 MAX_NW=15
@@ -82,5 +82,5 @@ rm aux.txt
 rm demo
 
 # plot results and open plots (works only in local)
-./plot.sh
+make plot
 feh results/results*.png

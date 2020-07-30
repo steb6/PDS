@@ -26,7 +26,7 @@ using namespace std::chrono;
 
 int main(int argc, char *argv[]){
 
-        srand(time(NULL));
+        srand(5);
 
 	// ********************************* input reading /**********************************/
 	int N_NODES=0;

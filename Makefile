@@ -1,26 +1,28 @@
 compile:
-	g++ -Wall main.cpp Population.cpp GA.cpp City.cpp utilities.cpp MyRandom.cpp -o demo -pthread -std=c++17 -O3
+	g++ -Wall source/main.cpp source/Population.cpp source/GA.cpp source/City.cpp source/utilities.cpp source/MyRandom.cpp -o demo -pthread -std=c++17 -O3
 
 compile-debug:
-	g++ -Wall main.cpp Population.cpp GA.cpp City.cpp utilities.cpp MyRandom.cpp -o demo -pthread -std=c++17 -O3 -g
+	g++ -Wall source/main.cpp source/Population.cpp source/GA.cpp source/City.cpp source/utilities.cpp source/MyRandom.cpp -o demo -pthread -std=c++17 -O3 -g
 
 compile-graph:
-	g++ -Wall main.cpp Population.cpp GA.cpp City.cpp utilities.cpp MyRandom.cpp Draw.cpp -o demo -g -pthread -lgraph -std=c++17 -DVERBOSE -DGRAPH -O3
+	g++ -Wall source/main.cpp source/Population.cpp source/GA.cpp source/City.cpp source/utilities.cpp source/MyRandom.cpp source/Draw.cpp -o demo -pthread -lgraph -std=c++17 -O3 -DVERBOSE -DGRAPH
 
-vectorized:
-	g++ -Wall -g City.cpp main.cpp utilities.cpp MyRandom.cpp Population.cpp GA.cpp -o demo -pthread -O3 -fopt-info-vec
+compile-vectorized:
+	g++ -Wall source/main.cpp source/Population.cpp source/GA.cpp source/City.cpp source/utilities.cpp source/MyRandom.cpp -o demo -pthread -std=c++17 -O3 -fopt-info-vec
+
+test:
+	bash/test.sh
+
+plot:
+	bash/plot.sh
+	feh results/results*
+
+# commands for remote machine
+connect:
+	ssh s.berti9@phi19
 
 transfer:
 	rsync -azur . s.berti9@phi19:
 
 get:
 	rsync -azur s.berti9@phi19:results /home/stefano/Desktop/PDS
-
-test:
-	./test.sh
-
-connect:
-	ssh s.berti9@phi19
-
-latex:
-	pdflatex report/report.tex
